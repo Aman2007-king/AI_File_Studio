@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Studio: Cyber Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script> 
+    <!-- Three.js for 3D Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cyber-blue': '#00ffff',
+                        'cyber-purple': '#ff00ff',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* General setup for 3D Background */
+        body {
+            margin: 0;
+            overflow: auto; /* IMPORTANT: Changed from hidden to auto to allow body scrolling */
+            font-family: 'Inter', sans-serif;
+            background-color: #0d001a; /* Very dark blue/black for depth */
+            min-height: 100vh;
+        }
+        /* Canvas must be fixed and cover the entire viewport in the background */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0; 
+        }
+
+        /* Main application container for foreground content */
+        #app-wrapper {
+            position: relative;
+            z-index: 10; /* Ensure content is above the 3D background */
+            /* Removed min-height: 100vh; here to let content dictate height */
+            padding: 1.5rem 0; /* Vertical padding */
+            min-height: 100%; /* Ensure it spans the full height of its container if needed */
+        }
+        
+        /* Adjusted max-width for better fit in smaller previews */
+        #app {
+            max-width: 90%; /* Using 90% width */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Styles copied from previous AI Studio */
+        .card {
+            /* Now using opacity for background */
+            background-color: rgba(31, 41, 55, 0.95); /* Semi-transparent dark card */
+            border: 1px solid #374151; 
+        }
+        .header-bg {
+             background-color: rgba(31, 41, 55, 0.95); /* Semi-transparent header */
+        }
+        .tab-active {
+            border-bottom: 3px solid #00ffff; /* Cyber Blue accent */
+            color: #00ffff;
+        }
+        .tab-inactive {
+            border-bottom: 3px solid transparent;
+            color: #9CA3AF;
+        }
+        .main-btn {
+            @apply w-full font-bold py-3 rounded-lg transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
+        }
+        /* Override default colors to use cyber aesthetic */
+        .text-indigo-400 { color: #00ffff; }
+        .border-indigo-700 { border-color: #00ffff; }
+    </style>
+</head>
+<body>
+
+    <!-- Canvas Container for Three.js (Z-INDEX: 0) -->
+    <canvas id="bgCanvas"></canvas>
+
+    <!-- Main Application Wrapper (Z-INDEX: 10) -->
+    <div id="app-wrapper">
+        <div id="app" class="max-w-4xl p-4 sm:p-8">
+            <header class="text-center mb-8 p-4 rounded-lg header-bg shadow-2xl">
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-cyber-blue mb-2 tracking-wide">AI Image Studio</h1>
+                <p class="text-lg text-gray-400">Generate, Edit, Compress, Convert, and Recognize Text</p>
+                <p id="auth-status" class="text-xs text-gray-500 mt-1">Authenticating...</p>
+            </header>
+
+            <!-- Tab Navigation -->
+            <div class="flex border-b border-gray-700 mb-6 overflow-x-auto bg-gray-900/80 rounded-t-lg p-1">
+                <button id="tab-generator" onclick="setActiveTab('generator')" class="py-3 px-4 text-sm font-medium tab-active whitespace-nowrap hover:text-cyber-blue">
+                    AI Image Editor/Generator
+                </button>
+                <button id="tab-compressor" onclick="setActiveTab('compressor')" class="py-3 px-4 text-sm font-medium tab-inactive whitespace-nowrap hover:text-cyber-blue">
+                    Image Compressor
+                </button>
+                <button id="tab-converter" onclick="setActiveTab('converter')" class="py-3 px-4 text-sm font-medium tab-inactive whitespace-nowrap hover:text-cyber-blue">
+                    File Converter
+                </button>
+                <button id="tab-ocr" onclick="setActiveTab('ocr')" class="py-3 px-4 text-sm font-medium tab-inactive whitespace-nowrap hover:text-cyber-blue">
+                    Text Recognition (OCR)
+                </button>
+            </div>
+
+            <!-- Content Area: 1. Image Generator/Editor -->
+            <div id="content-generator" class="card p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 text-white">Create or Edit an Image (Inpainting/Outpainting)</h2>
+                <p class="text-gray-400 text-sm mb-4">Upload a reference image to edit it with a prompt, or leave it blank to generate a new one.</p>
+                
+                <!-- Reference Image Upload -->
+                <div class="mb-4">
+                    <label for="reference-image-upload" class="block text-sm font-medium mb-2 text-white">Upload Reference Image (Optional)</label>
+                    <input type="file" id="reference-image-upload" accept="image/*" onchange="handleReferenceImageUpload()"
+                           class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyber-blue file:text-gray-900 hover:file:bg-cyan-300 cursor-pointer" />
+                </div>
+
+                <!-- Reference Image Preview -->
+                <div id="reference-image-container" class="mb-4 p-4 bg-gray-800/70 border border-gray-700 rounded-lg hidden">
+                    <h3 class="text-lg font-medium mb-3 text-white">Reference Image</h3>
+                    <img id="reference-image-preview" class="w-full rounded-lg shadow-md max-h-60 object-contain" alt="Reference Image" />
+                </div>
+
+                <input type="text" id="prompt-input" placeholder="A synthwave style cityscape with neon flying cars, or, change the man's shirt to purple" 
+                       class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-cyber-blue focus:border-cyber-blue mb-4" />
+                
+                <div class="mb-4">
+                    <label for="aspect-ratio" class="block text-sm font-medium mb-2 text-white">Aspect Ratio (Applies only to new generations)</label>
+                    <select id="aspect-ratio" class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-cyber-blue focus:border-cyber-blue">
+                        <option value="1:1">Square (1:1)</option>
+                        <option value="16:9">Landscape (16:9)</option>
+                        <option value="4:3">Desktop (4:3)</option>
+                        <option value="9:16">Portrait (9:16)</option>
+                    </select>
+                </div>
+
+                <button id="generate-btn" onclick="generateImage()" 
+                        class="main-btn bg-cyber-blue text-gray-900 hover:bg-cyan-300">
+                    Generate/Edit Image
+                </button>
+
+                <div id="loading-indicator" class="mt-6 text-center hidden">
+                    <div class="animate-spin inline-block w-8 h-8 border-4 border-cyber-blue border-t-transparent rounded-full"></div>
+                    <p class="mt-2 text-cyber-blue">Processing stunning visuals...</p>
+                </div>
+
+                <div id="generated-image-box" class="mt-6 p-4 bg-gray-800/70 border border-gray-700 rounded-lg hidden">
+                    <h3 class="text-lg font-medium mb-3 text-white">Generated Result</h3>
+                    <img id="generated-image" class="w-full rounded-lg shadow-md" alt="Generated Image" />
+                </div>
+
+                <p id="generator-error" class="text-red-400 mt-4 text-sm hidden"></p>
+
+                <!-- Collaborative Generation History Feed -->
+                <div class="mt-8 pt-4 border-t border-gray-700">
+                    <h3 class="text-xl font-semibold mb-4 text-white flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-cyber-blue"><path d="M12 21.5a1.5 1.5 0 0 1-1.5-1.5v-6h-3a1.5 1.5 0 0 1-1.5-1.5v-3a1.5 1.5 0 0 1 1.5-1.5h1.5v-3A1.5 1.5 0 0 1 12 3.5a1.5 1.5 0 0 1 1.5 1.5v3h1.5a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3v6a1.5 1.5 0 0 1-1.5 1.5z"/></svg>
+                        Community Generations
+                    </h3>
+                    <p class="text-gray-500 text-sm mb-4">See the latest prompts used by other users and click on one to load it.</p>
+                    <div id="generation-feed" class="space-y-4">
+                        <p class="text-gray-500 text-center" id="feed-status">Loading feed...</p>
+                        <!-- Feed items will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area: 2. Image Compressor -->
+            <div id="content-compressor" class="card p-6 rounded-lg shadow-lg hidden">
+                <h2 class="text-2xl font-semibold mb-4 text-white">
+                    Image Compressor
+                </h2>
+                
+                <input type="file" id="image-upload" accept="image/*" onchange="handleImageUpload()" 
+                       class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-500 cursor-pointer mb-6" multiple /> 
+
+                <!-- File List Display -->
+                <div id="file-list-compressor" class="mt-4 mb-6 space-y-2 text-sm p-3 bg-gray-800/70 rounded-lg hidden">
+                    <!-- File items will be inserted here -->
+                </div>
+                
+                <div id="compression-controls" class="hidden">
+                    
+                    <!-- 1. RESOLUTION CONTROL (PIXEL SIZE) -->
+                    <h3 class="text-lg font-medium mb-3 text-white border-b border-gray-700 pb-2">1. Change Resolution (Batch Applied)</h3>
+                    <p class="text-gray-400 text-sm mb-3">Settings below apply to ALL uploaded images. Resolution placeholders show data for the first uploaded image.</p>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="new-width" class="block text-xs font-medium mb-1 text-gray-400">New Width (px)</label>
+                            <input type="number" id="new-width" placeholder="Original width" oninput="applyCompression()" class="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 text-white" />
+                        </div>
+                        <div>
+                            <label for="new-height" class="block text-xs font-medium mb-1 text-gray-400">New Height (px)</label>
+                            <input type="number" id="new-height" placeholder="Original height" oninput="applyCompression()" class="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 text-white" />
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between mb-4 text-sm">
+                        <span id="original-resolution" class="text-gray-400 text-xs">Original (First Image): -</span>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" id="keep-aspect-ratio" checked onchange="applyCompression()" class="h-4 w-4 text-green-600 bg-gray-700 border-gray-600 rounded focus:ring-green-500">
+                            <span class="text-gray-300">Keep Aspect Ratio</span>
+                        </label>
+                    </div>
+
+                    <!-- 2. OUTPUT FORMAT AND QUALITY CONTROL -->
+                    <h3 class="text-lg font-medium mb-3 text-white border-b border-gray-700 pt-4 pb-2">2. Output Format and Quality</h3>
+
+                    <div class="mb-4">
+                        <label for="output-format" class="block text-sm font-medium mb-2 text-white">Output Format</label>
+                        <select id="output-format" onchange="applyCompression()" class="w-full p-2 rounded-lg bg-gray-800 border border-gray-700 text-white">
+                            <option value="image/jpeg">JPEG (Best for photos)</option>
+                            <option value="image/png">PNG (Best for graphics/transparency)</option>
+                            <option value="image/webp">WebP (Modern, highly efficient)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Quality Control Container (Visible for JPEG and WebP) -->
+                    <div id="quality-control-container">
+                        <div class="mb-6">
+                            <label for="quality-slider" class="block text-sm font-medium mb-2 text-white">
+                                Quality: <span id="quality-value">75</span>%
+                            </label>
+                            <input type="range" id="quality-slider" min="0" max="100" value="75" step="1" oninput="applyCompression()" 
+                                   class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer range-lg accent-green-500" />
+                            <p id="quality-tip" class="text-xs text-gray-500 mt-1">Lower quality means smaller file size, but more visual artifacts.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- STATS DISPLAY - Simplified for batch, showing first image's impact -->
+                    <div class="grid grid-cols-2 gap-4 text-sm mb-6 p-4 bg-gray-800/70 rounded-lg border border-gray-700">
+                        <div class="col-span-2 text-gray-400 text-xs">Compression Stats below reflect the conversion of the **first** image only.</div>
+                        <div>
+                            <p class="text-gray-400">Original Size (First):</p>
+                            <p id="original-size" class="text-white font-bold">-</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400">Compressed Size (First):</p>
+                            <p id="compressed-size" class="text-white font-bold">-</p>
+                        </div>
+                        <div class="col-span-2">
+                            <p class="text-gray-400">Reduction (First):</p>
+                            <p id="reduction-amount" class="text-green-400 font-bold">-</p>
+                        </div>
+                    </div>
+
+                    <canvas id="hidden-canvas" class="hidden"></canvas>
+                    <img id="compressed-preview" class="max-w-full rounded-lg shadow-md mb-6 border border-gray-700 hidden" alt="Compressed Image Preview (First Image)" />
+
+                    <button id="download-btn" onclick="downloadCompressed()" disabled 
+                            class="main-btn bg-green-600 text-white hover:bg-green-500">
+                        Download Compressed Images (ZIP)
+                    </button>
+                </div>
+                <p id="compressor-message" class="text-gray-400 mt-4 text-sm">Upload one or more images to start compressing.</p>
+            </div>
+
+            <!-- Content Area: 3. File Converter -->
+            <div id="content-converter" class="card p-6 rounded-lg shadow-lg hidden">
+                <h2 class="text-2xl font-semibold mb-4 text-white">
+                    Convert Image to Document or Text
+                </h2>
+                <p class="text-gray-400 mb-6">Convert images into a single **PDF** (each image becomes a new page) or into a **Base64 string list** for direct web embedding.</p>
+
+                <input type="file" id="doc-upload" accept="image/*" onchange="handleDocUpload()" 
+                       class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyber-purple file:text-white hover:file:bg-fuchsia-400 cursor-pointer mb-6" multiple /> 
+
+                <!-- File List Display -->
+                <div id="file-list-converter" class="mt-4 mb-6 space-y-2 text-sm p-3 bg-gray-800/70 rounded-lg hidden">
+                    <!-- File items will be inserted here -->
+                </div>
+
+                <div id="converter-controls" class="hidden">
+
+                    <div class="mb-4">
+                        <label for="conversion-output-format" class="block text-sm font-medium mb-2 text-white">Output Format</label>
+                        <select id="conversion-output-format" onchange="updateConverterUI()" class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white">
+                            <option value="pdf">Document (PDF)</option>
+                            <option value="base64">Text (Base64 String)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Conditional Field for PDF -->
+                    <div id="pdf-filename-container" class="mb-4">
+                        <label for="pdf-filename" class="block text-sm font-medium mb-2 text-white">PDF Output Filename</label>
+                        <input type="text" id="pdf-filename" value="converted_document"
+                               class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white" />
+                    </div>
+                    
+                    <!-- Quality Control Container (for PDF compression) -->
+                    <div id="converter-quality-control-container" class="mb-6 hidden">
+                        <h3 class="text-sm font-medium mb-2 text-white border-b border-gray-700 pb-1">Image Quality for PDF</h3>
+                        <label for="converter-quality-slider" class="block text-sm font-medium mb-2 text-white">
+                            JPEG Quality: <span id="converter-quality-value">75</span>%
+                        </label>
+                        <input type="range" id="converter-quality-slider" min="0" max="100" value="75" step="1" oninput="document.getElementById('converter-quality-value').textContent = this.value;" 
+                               class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer range-lg accent-cyber-purple" />
+                        <p class="text-xs text-gray-500 mt-1">Lower quality reduces the file size of the output PDF.</p>
+                    </div>
+                    
+                    <!-- Base64 Output Area (Hidden by default) -->
+                    <div id="base64-output-container" class="hidden mb-4">
+                        <label class="block text-sm font-medium mb-2 text-white">Base64 Output (Copy to Clipboard)</label>
+                        <textarea id="base64-output" rows="10" readonly 
+                                  class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white text-xs resize-none"></textarea> 
+                        <button id="copy-base64-btn" onclick="copyBase64()" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 rounded-lg transition duration-300 mt-2">
+                            Copy Base64 to Clipboard
+                        </button>
+                    </div>
+
+                    <button id="convert-btn" onclick="handleConversion()" disabled 
+                            class="main-btn bg-cyber-purple text-white hover:bg-fuchsia-400">
+                        Convert and Download
+                    </button>
+                    
+                    <img id="uploaded-image-preview" class="max-w-full rounded-lg shadow-md mt-6 border border-gray-700 hidden" alt="Uploaded Image Preview" />
+                </div>
+                <p id="converter-message" class="text-gray-400 mt-4 text-sm">Upload one or more images (PNG, JPEG) to start conversion.</p>
+            </div>
+            
+            <!-- Content Area: 4. Text Recognition (OCR) -->
+            <div id="content-ocr" class="card p-6 rounded-lg shadow-lg hidden">
+                <h2 class="text-2xl font-semibold mb-4 text-white">
+                    Extract Text from Image (OCR)
+                </h2>
+                <p class="text-gray-400 text-sm mb-4">Upload an image containing text (scanned documents, receipts, screenshots) and let the AI convert it into editable text.</p>
+
+                <input type="file" id="ocr-image-upload" accept="image/*" onchange="handleOCRUpload()" 
+                       class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-yellow-400 file:text-gray-900 hover:file:bg-yellow-300 cursor-pointer mb-6" />
+
+                <!-- OCR Image Preview -->
+                <div id="ocr-image-container" class="mb-4 p-4 bg-gray-800/70 border border-gray-700 rounded-lg hidden">
+                    <h3 class="text-lg font-medium mb-3 text-white">Image Preview</h3>
+                    <img id="ocr-image-preview" class="w-full rounded-lg shadow-md max-h-60 object-contain" alt="OCR Image Preview" />
+                </div>
+
+                <button id="ocr-btn" onclick="performOCR()" disabled
+                        class="main-btn bg-yellow-400 text-gray-900 hover:bg-yellow-300">
+                    Perform Text Recognition
+                </button>
+                
+                <div id="ocr-loading" class="mt-6 text-center hidden">
+                    <div class="animate-spin inline-block w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full"></div>
+                    <p id="ocr-status-progress" class="mt-2 text-yellow-400">Analyzing image for text...</p>
+                </div>
+
+                <div id="ocr-result-container" class="mt-6 hidden">
+                    <label class="block text-sm font-medium mb-2 text-white">Extracted Text</label>
+                    <textarea id="ocr-result" rows="10" readonly 
+                              class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm resize-none"></textarea>
+                    <button id="copy-ocr-btn" onclick="copyOCRText()" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 rounded-lg transition duration-300 mt-2">
+                        Copy Text to Clipboard
+                    </button>
+                </div>
+
+                <p id="ocr-error" class="text-red-400 mt-4 text-sm hidden"></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- --- SCRIPTS --- -->
+
+    <!-- 1. Three.js Logic for 3D Background -->
+    <script>
+        // --- Three.js Setup and Animation ---
+        let scene, camera, renderer;
+        let mesh, points;
+        const canvas = document.getElementById('bgCanvas');
+
+        // Initialization function for 3D
+        function initThreeJS() {
+            if (!canvas) return;
+            
+            // 1. Scene
+            scene = new THREE.Scene();
+
+            // 2. Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 25;
+            
+            // 3. Renderer
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            
+            // 4. Create Geometry (A big, randomized plane)
+            const geometry = new THREE.PlaneGeometry(60, 60, 60, 60);
+
+            // Randomly displace vertices to make it look like a floating terrain/data field
+            const positionAttribute = geometry.getAttribute('position');
+            for (let i = 0; i < positionAttribute.count; i++) {
+                const z_offset = (Math.random() - 0.5) * 5;
+                positionAttribute.setZ(i, z_offset); 
+            }
+            geometry.attributes.position.needsUpdate = true;
+            geometry.rotateX(-Math.PI / 2); // Rotate to lay flat (ground plane)
+            geometry.translate(0, -5, 0); // Move below the center of the view
+
+            // 5. Create Materials
+            const meshMaterial = new THREE.MeshBasicMaterial({
+                color: 0x00ffff, // Cyber Blue
+                wireframe: true,
+                transparent: true,
+                opacity: 0.1, /* Reduced opacity for better foreground visibility */
+                side: THREE.DoubleSide
+            });
+
+            const pointsMaterial = new THREE.PointsMaterial({
+                color: 0xff00ff, // Cyber Purple/Pink
+                size: 0.1,
+                sizeAttenuation: true
+            });
+
+            // 6. Create Mesh Objects
+            mesh = new THREE.Mesh(geometry, meshMaterial);
+            points = new THREE.Points(geometry, pointsMaterial);
+
+            scene.add(mesh);
+            scene.add(points);
+        }
+
+        // Animation loop
+        function animate(time) {
+            requestAnimationFrame(animate);
+
+            // Rotate the entire group (mesh and points) slightly
+            mesh.rotation.y += 0.0005;
+            points.rotation.y += 0.0005;
+            
+            // Slight up/down movement over time
+            mesh.position.y = -5 + Math.sin(time * 0.0002) * 0.5;
+            points.position.y = mesh.position.y;
+            
+            renderer.render(scene, camera);
+        }
+
+        // Handle window resizing
+        function onWindowResize() {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        }
+        window.addEventListener('resize', onWindowResize);
+    </script>
+
+    <!-- 2. Firebase Initialization and Main Application Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables provided by the environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        // Global variables for Firebase services
+        window.app = null;
+        window.db = null;
+        window.auth = null;
+        window.userId = 'unknown';
+        // Expose necessary Firestore functions to the global scope
+        window.firestore_module = { collection, addDoc, query, orderBy, limit, onSnapshot };
+
+        // --- Firebase Initialization ---
+        const initFirebase = async () => {
+            try {
+                if (Object.keys(firebaseConfig).length > 0) {
+                    window.app = initializeApp(firebaseConfig);
+                    window.db = getFirestore(window.app);
+                    window.auth = getAuth(window.app);
+                } else {
+                    console.error("Firebase config is empty.");
+                }
+
+                const authStatusEl = document.getElementById('auth-status');
+
+                if (initialAuthToken) {
+                    await signInWithCustomToken(window.auth, initialAuthToken);
+                    window.userId = window.auth.currentUser.uid;
+                    authStatusEl.textContent = 'Authenticated. User ID: ' + window.userId;
+                } else if (window.auth) {
+                    // Sign in anonymously if no custom token is provided
+                    await signInAnonymously(window.auth);
+                    window.userId = window.auth.currentUser.uid;
+                    authStatusEl.textContent = 'Signed in anonymously. User ID: ' + window.userId;
+                } else {
+                    authStatusEl.textContent = 'Firebase services unavailable.';
+                }
+                
+                // Set up the real-time feed once Firebase is initialized and auth is complete
+                if (window.db) {
+                    window.setupGenerationFeed();
+                }
+
+            } catch (error) {
+                console.error("Error during Firebase initialization or sign-in:", error);
+                document.getElementById('auth-status').textContent = 'Authentication failed.';
+            }
+        };
+
+        // Call the Firebase initializer
+        initFirebase();
+    </script>
+    
+    <!-- 3. Main Application Logic (Generator, Compressor, Converter, OCR) -->
+    <script>
+        // --- Global Constants and State ---
+        const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models/';
+        const GENERATOR_MODEL = 'gemini-2.5-flash-image-preview'; 
+        const MULTIMODAL_MODEL = 'gemini-2.5-flash-preview-09-2025';
+        const API_KEY = ""; // This should be left empty for the environment to inject the key
+
+        let uploadedFiles = []; 
+        let base64ReferenceImage = null; 
+        let originalFileSize = 0;
+        let originalImageWidth = 0; 
+        let originalImageHeight = 0; 
+        let originalImageObject = null; 
+        let ocrFile = null;
+
+        // --- Utility Functions (fetchWithRetry, formatBytes, dataURLtoBlob, loadImageFromFile, fileToBase64) ---
+        async function fetchWithRetry(fn, maxRetries = 3) {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fn();
+                    if (response.ok) {
+                        return response;
+                    } else if (response.status === 429 && i < maxRetries - 1) {
+                        const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        continue;
+                    } else {
+                        // Crucial for debugging 4xx errors
+                        console.error(`Attempt ${i + 1} failed: Status ${response.status} - ${response.statusText}`);
+                        throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
+                    }
+                } catch (error) {
+                    if (i === maxRetries - 1) {
+                        throw error;
+                    }
+                    const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        function dataURLtoBlob(dataurl) {
+            const parts = dataurl.split(',');
+            const mime = parts[0].match(/:(.*?);/)[1];
+            const bstr = atob(parts[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while(n--){
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], {type:mime});
+        }
+        
+        function loadImageFromFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const image = new Image();
+                    image.onload = () => resolve(image);
+                    image.onerror = reject;
+                    image.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        async function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const dataUrl = reader.result;
+                    const parts = dataUrl.split(',');
+                    if (parts.length < 2) {
+                        reject(new Error("Invalid Data URL format."));
+                        return;
+                    }
+                    const mimeType = parts[0].match(/:(.*?);/)?.[1] || file.type;
+                    const base64 = parts[1];
+                    resolve({ base64, mimeType });
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // --- Firebase Integration Functions ---
+        function saveGenerationToFirestore(prompt) {
+            if (!window.db || !window.firestore_module) return;
+            const { collection, addDoc } = window.firestore_module;
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const generationsCollection = collection(window.db, `/artifacts/${appId}/public/data/generations`);
+            addDoc(generationsCollection, {
+                prompt: prompt,
+                userId: window.userId,
+                timestamp: Date.now() 
+            }).catch(e => {
+                console.error("Error saving generation to feed:", e);
+            });
+        }
+
+        window.loadPromptFromFeed = function(promptText) {
+            document.getElementById('prompt-input').value = promptText;
+            document.getElementById('prompt-input').focus();
+            document.getElementById('content-generator').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        window.setupGenerationFeed = function() {
+            if (!window.db || !window.firestore_module) return;
+
+            const { collection, query, orderBy, limit, onSnapshot } = window.firestore_module;
+            const feedEl = document.getElementById('generation-feed');
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            
+            const generationsCollectionRef = collection(window.db, `/artifacts/${appId}/public/data/generations`);
+            
+            const q = query(generationsCollectionRef, orderBy("timestamp", "desc"), limit(10));
+            
+            onSnapshot(q, (snapshot) => {
+                let html = '';
+                if (snapshot.empty) {
+                    feedEl.innerHTML = '<p class="text-gray-500 text-center">No community generations yet. Be the first!</p>';
+                    return;
+                }
+
+                snapshot.docs.forEach(doc => {
+                    const data = doc.data();
+                    const promptText = data.prompt || 'Generated Image';
+                    const shortenedPrompt = promptText.length > 80 ? promptText.substring(0, 77) + '...' : promptText;
+                    
+                    const time = new Date(data.timestamp);
+                    const timeAgo = time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                    const userIdDisplay = data.userId.substring(0, 8) + '...';
+
+                    html += `
+                        <div class="card p-3 rounded-lg flex items-center justify-between transition duration-150 hover:bg-gray-700/80 cursor-pointer" onclick="loadPromptFromFeed('${promptText.replace(/'/g, "\\'")}')">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-cyber-blue truncate">${shortenedPrompt}</p>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    by ${userIdDisplay} | ${timeAgo}
+                                </p>
+                            </div>
+                            <button title="Use this prompt" class="text-cyber-blue hover:text-cyan-300 ml-4 p-2 rounded-full hover:bg-gray-700 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12l7-7 7 7"/></svg>
+                            </button>
+                        </div>
+                    `;
+                });
+                feedEl.innerHTML = html;
+            }, (error) => {
+                console.error("Error setting up generation feed listener:", error);
+                feedEl.innerHTML = '<p class="text-red-400 text-center text-sm">Error loading community feed.</p>';
+            });
+        };
+
+
+        // --- Image Generator/Editor Logic ---
+        async function handleReferenceImageUpload() {
+            const fileInput = document.getElementById('reference-image-upload');
+            const container = document.getElementById('reference-image-container');
+            const preview = document.getElementById('reference-image-preview');
+            base64ReferenceImage = null;
+            container.classList.add('hidden');
+
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                try {
+                    const { base64, mimeType } = await fileToBase64(file);
+                    base64ReferenceImage = { data: base64, mimeType };
+                    preview.src = `data:${mimeType};base64,${base64}`;
+                    container.classList.remove('hidden');
+                } catch (e) {
+                    console.error("Error processing reference image:", e);
+                    document.getElementById('generator-error').textContent = "Could not load image. Please try another file.";
+                    document.getElementById('generator-error').classList.remove('hidden');
+                }
+            }
+        }
+
+        async function generateImage() {
+            const prompt = document.getElementById('prompt-input').value.trim();
+            const aspectRatio = document.getElementById('aspect-ratio').value;
+            const btn = document.getElementById('generate-btn');
+            const loading = document.getElementById('loading-indicator');
+            const imageBox = document.getElementById('generated-image-box');
+            const imageEl = document.getElementById('generated-image');
+            const errorEl = document.getElementById('generator-error');
+
+            if (!prompt) {
+                errorEl.textContent = "Please enter a prompt for generation or editing.";
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            errorEl.classList.add('hidden');
+            imageBox.classList.add('hidden');
+            loading.classList.remove('hidden');
+            btn.disabled = true;
+
+            const apiUrl = `${GEMINI_API_BASE}${GENERATOR_MODEL}:generateContent?key=${API_KEY}`;
+            const parts = [];
+            
+            if (base64ReferenceImage) {
+                parts.push({
+                    inlineData: { mimeType: base64ReferenceImage.mimeType, data: base64ReferenceImage.data }
+                });
+                parts.push({ text: prompt });
+                btn.textContent = 'Editing Image...';
+            } else {
+                parts.push({ text: prompt });
+                btn.textContent = 'Generating Image...';
+            }
+
+            const payload = {
+                contents: [{ parts: parts }],
+                generationConfig: {
+                    responseModalities: ['TEXT', 'IMAGE'],
+                    imageGenerationConfig: {
+                        aspectRatio: aspectRatio, 
+                        numberOfImages: 1
+                    }
+                },
+            };
+
+            const fetchFn = () => fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            try {
+                const response = await fetchWithRetry(fetchFn);
+                const result = await response.json();
+
+                const base64Part = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+
+                if (base64Part && base64Part.inlineData?.data) {
+                    const base64Data = base64Part.inlineData.data;
+                    const mimeType = base64Part.inlineData.mimeType || 'image/png';
+                    const imageUrl = `data:${mimeType};base64,${base64Data}`;
+                    imageEl.src = imageUrl;
+                    imageBox.classList.remove('hidden');
+                    
+                    saveGenerationToFirestore(prompt);
+
+                } else if (result.error) {
+                    throw new Error(result.error.message || "An unknown API error occurred.");
+                } else {
+                    throw new Error("Image processing failed. Check your prompt or image resolution.");
+                }
+            } catch (e) {
+                console.error("Image generation/editing error:", e);
+                errorEl.textContent = `Error: ${e.message}. Please try again.`;
+                errorEl.classList.remove('hidden');
+            } finally {
+                loading.classList.add('hidden');
+                btn.disabled = false;
+                btn.textContent = 'Generate/Edit Image';
+            }
+        }
+
+        // --- OCR Logic ---
+        function handleOCRUpload() {
+            const fileInput = document.getElementById('ocr-image-upload');
+            const container = document.getElementById('ocr-image-container');
+            const preview = document.getElementById('ocr-image-preview');
+            const btn = document.getElementById('ocr-btn');
+            
+            ocrFile = null;
+            container.classList.add('hidden');
+            document.getElementById('ocr-result-container').classList.add('hidden');
+            document.getElementById('ocr-error').classList.add('hidden');
+
+            if (fileInput.files.length > 0) {
+                ocrFile = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) { 
+                    preview.src = e.target.result; 
+                    container.classList.remove('hidden');
+                    btn.disabled = false;
+                };
+                reader.readAsDataURL(ocrFile);
+            } else {
+                btn.disabled = true;
+            }
+        }
+
+        async function performOCR() {
+            if (!ocrFile) return;
+
+            const btn = document.getElementById('ocr-btn');
+            const loading = document.getElementById('ocr-loading');
+            const statusEl = document.getElementById('ocr-status-progress');
+            const resultContainer = document.getElementById('ocr-result-container');
+            const resultEl = document.getElementById('ocr-result');
+            const errorEl = document.getElementById('ocr-error');
+
+            errorEl.classList.add('hidden');
+            resultContainer.classList.add('hidden');
+            loading.classList.remove('hidden');
+            btn.disabled = true;
+            btn.textContent = 'Working...';
+            statusEl.textContent = 'Preparing image data...';
+
+            try {
+                const { base64, mimeType } = await fileToBase64(ocrFile);
+
+                statusEl.textContent = 'Sending data to AI model...';
+                const apiUrl = `${GEMINI_API_BASE}${MULTIMODAL_MODEL}:generateContent?key=${API_KEY}`;
+                
+                const systemPrompt = "You are an Optical Character Recognition (OCR) specialist. Your sole task is to accurately extract all text found in the image and return it as a single block of raw, unformatted text. Do not add any commentary, titles, or surrounding markdown.";
+                const userQuery = "Please extract the text from the following image.";
+
+                const payload = {
+                    contents: [
+                        {
+                            role: "user",
+                            parts: [
+                                { text: userQuery },
+                                {
+                                    inlineData: {
+                                        mimeType: mimeType,
+                                        data: base64
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
+                    },
+                };
+
+                const fetchFn = () => fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                statusEl.textContent = 'Analyzing image for text...';
+                const response = await fetchWithRetry(fetchFn);
+                
+                statusEl.textContent = 'Processing AI response...';
+                const result = await response.json();
+                
+                const extractedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (extractedText) {
+                    resultEl.value = extractedText.trim();
+                    resultContainer.classList.remove('hidden');
+                } else {
+                    throw new Error("The AI could not extract text from this image. It may be blurry, handwriting, or low resolution.");
+                }
+
+            } catch (e) {
+                console.error("OCR Error:", e);
+                errorEl.textContent = `Error during OCR: ${e.message}`;
+                errorEl.classList.remove('hidden');
+            } finally {
+                loading.classList.add('hidden');
+                btn.disabled = false;
+                btn.textContent = 'Perform Text Recognition';
+            }
+        }
+        
+        function copyOCRText() {
+            const resultEl = document.getElementById('ocr-result');
+            if (resultEl.value) {
+                resultEl.select();
+                try {
+                    document.execCommand('copy');
+                    document.getElementById('copy-ocr-btn').textContent = "Text Copied!";
+                    setTimeout(() => document.getElementById('copy-ocr-btn').textContent = "Copy Text to Clipboard", 2000);
+                } catch (err) { /* Fallback not required */ }
+            }
+        }
+
+
+        // --- Compressor Logic ---
+        function loadFirstImageForDefaults() {
+            const widthInputEl = document.getElementById('new-width');
+            const heightInputEl = document.getElementById('new-height');
+            
+            widthInputEl.value = '';
+            heightInputEl.value = '';
+            
+            if (uploadedFiles.length === 0) {
+                originalImageObject = null;
+                document.getElementById('original-resolution').textContent = 'Original: -';
+                widthInputEl.placeholder = 'Original width';
+                heightInputEl.placeholder = 'Original height'; 
+                document.getElementById('original-size').textContent = '-';
+                document.getElementById('compressed-size').textContent = '-';
+                document.getElementById('reduction-amount').textContent = '-';
+                document.getElementById('compressed-preview').classList.add('hidden');
+                return;
+            }
+
+            loadImageFromFile(uploadedFiles[0])
+                .then(img => {
+                    originalImageObject = img;
+                    originalImageWidth = img.width;
+                    originalImageHeight = img.height;
+                    originalFileSize = uploadedFiles[0].size;
+                    
+                    document.getElementById('original-resolution').textContent = 
+                        `Original (First Image): ${originalImageWidth}x${originalImageHeight} px`;
+
+                    widthInputEl.placeholder = `Original (${originalImageWidth})`;
+                    heightInputEl.placeholder = `Original (${originalImageHeight})`; 
+                    
+                    document.getElementById('original-size').textContent = formatBytes(originalFileSize);
+                    document.getElementById('compressed-preview').classList.remove('hidden');
+
+                    applyCompression();
+                })
+                .catch(e => console.error("Error loading image for defaults:", e));
+        }
+
+        function handleImageUpload() {
+            const fileInput = document.getElementById('image-upload');
+            const messageEl = document.getElementById('compressor-message');
+            const controlsEl = document.getElementById('compression-controls');
+            const downloadBtn = document.getElementById('download-btn');
+            const fileListEl = document.getElementById('file-list-compressor');
+            
+            uploadedFiles = Array.from(fileInput.files).filter(file => file.type.startsWith('image/'));
+
+            fileListEl.innerHTML = '';
+
+            if (uploadedFiles.length === 0) {
+                controlsEl.classList.add('hidden');
+                messageEl.classList.remove('hidden');
+                messageEl.textContent = "Upload one or more images to start compressing.";
+                fileListEl.classList.add('hidden');
+                downloadBtn.disabled = true;
+                return;
+            }
+
+            fileListEl.classList.remove('hidden');
+            uploadedFiles.forEach(file => {
+                fileListEl.innerHTML += `<p class="truncate text-gray-300">🖼️ ${file.name} (${formatBytes(file.size)})</p>`;
+            });
+
+            controlsEl.classList.remove('hidden');
+            messageEl.classList.add('hidden');
+            downloadBtn.textContent = `Process and Download ${uploadedFiles.length} Images (ZIP)`;
+            downloadBtn.disabled = false;
+            
+            loadFirstImageForDefaults();
+        }
+
+        function applyCompression() {
+            if (!originalImageObject) return;
+
+            const qualityValue = document.getElementById('quality-slider').value;
+            const widthInputEl = document.getElementById('new-width');
+            const heightInputEl = document.getElementById('new-height');
+            const keepRatio = document.getElementById('keep-aspect-ratio').checked;
+            const outputFormatEl = document.getElementById('output-format');
+            const format = outputFormatEl.value; 
+
+            const canvas = document.getElementById('hidden-canvas');
+            const previewEl = document.getElementById('compressed-preview');
+            const qualityValueEl = document.getElementById('quality-value');
+            const compressedSizeEl = document.getElementById('compressed-size');
+            const reductionEl = document.getElementById('reduction-amount');
+            const qualityControlContainer = document.getElementById('quality-control-container');
+            const qualityTip = document.getElementById('quality-tip');
+
+            let quality = qualityValue / 100;
+            
+            if (format === 'image/png') {
+                qualityControlContainer.classList.add('hidden');
+                qualityTip.textContent = 'PNG is lossless. Compression primarily comes from resolution change.';
+            } else {
+                qualityControlContainer.classList.remove('hidden');
+                qualityTip.textContent = `Lower quality means smaller file size, but more visual artifacts (Applies to ${format.split('/')[1].toUpperCase()}).`;
+            }
+
+            let targetWidth = originalImageWidth;
+            let targetHeight = originalImageHeight;
+
+            let newW = parseInt(widthInputEl.value, 10);
+            let newH = parseInt(heightInputEl.value, 10);
+            
+            const originalRatio = originalImageWidth / originalImageHeight;
+
+            if (keepRatio) {
+                if (document.activeElement === widthInputEl && newW > 0) {
+                    newH = Math.round(newW / originalRatio);
+                    heightInputEl.value = newH;
+                } else if (document.activeElement === heightInputEl && newH > 0) {
+                    newW = Math.round(newH * originalRatio);
+                    widthInputEl.value = newW;
+                }
+                
+                if (newW > 0 || newH > 0) {
+                    targetWidth = newW > 0 ? newW : Math.round(newH * originalRatio);
+                    targetHeight = newH > 0 ? newH : Math.round(newW / originalRatio);
+                }
+
+            } else {
+                if (newW > 0) targetWidth = newW;
+                if (newH > 0) targetHeight = newH;
+            }
+
+            if (newW <= 0 && newH <= 0) {
+                targetWidth = originalImageWidth;
+                targetHeight = originalImageHeight;
+            }
+            
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, targetWidth, targetHeight); 
+            ctx.drawImage(originalImageObject, 0, 0, targetWidth, targetHeight); 
+
+            qualityValueEl.textContent = qualityValue;
+            
+            const compressedDataURL = canvas.toDataURL(format, quality);
+            previewEl.src = compressedDataURL;
+
+            const base64 = compressedDataURL.split(',')[1];
+            const compressedFileSize = (base64.length * 0.75) - (base64.endsWith('==') ? 2 : base64.endsWith('=') ? 1 : 0);
+
+            compressedSizeEl.textContent = formatBytes(compressedFileSize);
+
+            const reduction = originalFileSize > 0 ? (1 - (compressedFileSize / originalFileSize)) * 100 : 0;
+            reductionEl.textContent = `${reduction.toFixed(2)}% reduction`;
+            
+            let textColor = 'text-gray-400';
+            if (reduction >= 50) {
+                textColor = 'text-green-400';
+            } else if (reduction >= 10) {
+                textColor = 'text-yellow-400';
+            }
+            reductionEl.className = `font-bold ${textColor}`;
+        }
+
+        async function downloadCompressed() {
+            if (uploadedFiles.length === 0 || typeof JSZip === 'undefined') return;
+
+            const downloadBtn = document.getElementById('download-btn');
+            const originalText = downloadBtn.textContent;
+            downloadBtn.disabled = true;
+            downloadBtn.textContent = 'Processing... Please wait.';
+
+            const zip = new JSZip();
+            const canvas = document.getElementById('hidden-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            const quality = parseInt(document.getElementById('quality-slider').value, 10) / 100;
+            const format = document.getElementById('output-format').value; 
+            let extension = format.split('/')[1];
+
+            const targetWidthInput = parseInt(document.getElementById('new-width').value, 10);
+            const targetHeightInput = parseInt(document.getElementById('new-height').value, 10);
+            const keepRatio = document.getElementById('keep-aspect-ratio').checked;
+
+            try {
+                for (let i = 0; i < uploadedFiles.length; i++) {
+                    const file = uploadedFiles[i];
+                    
+                    const img = await loadImageFromFile(file);
+
+                    let finalWidth = img.width;
+                    let finalHeight = img.height;
+                    
+                    const ratio = img.width / img.height;
+
+                    if (keepRatio) {
+                        let targetW = targetWidthInput > 0 ? targetWidthInput : img.width;
+                        let targetH = targetHeightInput > 0 ? targetHeightInput : img.height;
+                        
+                        if (targetW > 0 && targetH > 0) {
+                            const wRatio = targetW / img.width;
+                            const hRatio = targetH / img.height;
+                            if (wRatio < hRatio) {
+                                finalWidth = targetW;
+                                finalHeight = targetW / ratio;
+                            } else {
+                                finalWidth = targetH * ratio;
+                                finalHeight = targetH;
+                            }
+                        } else if (targetW > 0) {
+                            finalWidth = targetW;
+                            finalHeight = targetW / ratio;
+                        } else if (targetH > 0) {
+                            finalHeight = targetH;
+                            finalWidth = targetH * ratio;
+                        }
+                    } else {
+                        if (targetWidthInput > 0) finalWidth = targetWidthInput;
+                        if (targetHeightInput > 0) finalHeight = targetHeightInput;
+                    }
+                    
+                    finalWidth = Math.round(finalWidth);
+                    finalHeight = Math.round(finalHeight);
+
+                    canvas.width = finalWidth;
+                    canvas.height = finalHeight;
+                    ctx.clearRect(0, 0, finalWidth, finalHeight); 
+                    ctx.drawImage(img, 0, 0, finalWidth, finalHeight); 
+
+                    const dataUrl = canvas.toDataURL(format, quality);
+                    const base64Data = dataUrl.split(',')[1];
+                    
+                    const originalName = file.name.split('.')[0] || `compressed_image_${i+1}`;
+                    const filename = `${originalName}_${finalWidth}px.${extension}`;
+                    
+                    zip.file(filename, base64Data, { base64: true });
+                }
+
+                const content = await zip.generateAsync({ type: "blob" });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(content);
+                a.download = `compressed_batch_${new Date().getTime()}.zip`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            } catch (error) {
+                console.error("Batch Compression Error:", error);
+                downloadBtn.textContent = 'Error during processing';
+                setTimeout(() => downloadBtn.textContent = originalText, 3000);
+            } finally {
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = originalText;
+            }
+        }
+
+        // --- File Converter Logic ---
+        function handleDocUpload() {
+            const fileInput = document.getElementById('doc-upload');
+            const messageEl = document.getElementById('converter-message');
+            const controlsEl = document.getElementById('converter-controls');
+            const convertBtn = document.getElementById('convert-btn');
+            const previewEl = document.getElementById('uploaded-image-preview');
+            const fileListEl = document.getElementById('file-list-converter'); 
+
+            uploadedFiles = Array.from(fileInput.files).filter(file => file.type.startsWith('image/'));
+            fileListEl.innerHTML = '';
+            
+            if (uploadedFiles.length === 0) {
+                controlsEl.classList.add('hidden');
+                messageEl.classList.remove('hidden');
+                messageEl.textContent = "Upload one or more images (PNG, JPEG) to start conversion.";
+                previewEl.classList.add('hidden');
+                convertBtn.disabled = true;
+                fileListEl.classList.add('hidden');
+                return;
+            }
+
+            fileListEl.classList.remove('hidden');
+            uploadedFiles.forEach(file => {
+                fileListEl.innerHTML += `<p class="truncate text-gray-300">📄 ${file.name} (${formatBytes(file.size)})</p>`;
+            });
+
+            if (uploadedFiles.length === 1) {
+                const reader = new FileReader();
+                reader.onload = function(e) { previewEl.src = e.target.result; previewEl.classList.remove('hidden'); };
+                reader.readAsDataURL(uploadedFiles[0]);
+            } else {
+                previewEl.classList.add('hidden');
+            }
+
+            controlsEl.classList.remove('hidden');
+            messageEl.classList.add('hidden');
+            convertBtn.disabled = false;
+            updateConverterUI();
+        }
+
+        function updateConverterUI() {
+            const format = document.getElementById('conversion-output-format').value;
+            const filenameContainer = document.getElementById('pdf-filename-container');
+            const base64Container = document.getElementById('base64-output-container');
+            const qualityContainer = document.getElementById('converter-quality-control-container');
+            const convertBtn = document.getElementById('convert-btn');
+
+            if (uploadedFiles.length === 0) {
+                convertBtn.textContent = 'Convert and Download';
+                return;
+            }
+            
+            if (format === 'pdf') {
+                filenameContainer.classList.remove('hidden');
+                qualityContainer.classList.remove('hidden');
+                base64Container.classList.add('hidden');
+                convertBtn.textContent = `Convert ${uploadedFiles.length} Image(s) to Single PDF and Download`;
+            } else if (format === 'base64') {
+                filenameContainer.classList.add('hidden');
+                qualityContainer.classList.add('hidden');
+                base64Container.classList.remove('hidden');
+                convertBtn.textContent = `Generate ${uploadedFiles.length} Base64 String(s)`;
+            }
+        }
+        
+        function handleConversion() {
+            if (uploadedFiles.length === 0) return;
+            
+            const format = document.getElementById('conversion-output-format').value;
+            const convertBtn = document.getElementById('convert-btn');
+            convertBtn.disabled = true;
+            convertBtn.textContent = 'Processing...';
+
+            if (format === 'pdf') {
+                convertToPdfBatch();
+            } else if (format === 'base64') {
+                convertToBase64Batch();
+            }
+        }
+
+        async function convertToBase64Batch() {
+            const base64OutputEl = document.getElementById('base64-output');
+            const convertBtn = document.getElementById('convert-btn');
+            let outputText = "";
+
+            try {
+                for (const file of uploadedFiles) {
+                    const dataUrl = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+
+                    outputText += `--- Data URL for ${file.name} ---\n${dataUrl}\n\n`;
+                }
+
+                base64OutputEl.value = outputText.trim();
+                base64OutputEl.select();
+                base64OutputEl.placeholder = `${uploadedFiles.length} Base64 string(s) generated and ready to copy.`;
+
+            } catch (error) {
+                console.error("Base64 Batch Error:", error);
+                base64OutputEl.value = `Error generating Base64 strings: ${error.message}`;
+            } finally {
+                convertBtn.disabled = false;
+                updateConverterUI();
+            }
+        }
+        
+        function copyBase64() {
+            const base64OutputEl = document.getElementById('base64-output');
+            const copyBtn = document.getElementById('copy-base64-btn');
+            if (base64OutputEl.value) {
+                base64OutputEl.select();
+                try {
+                    document.execCommand('copy');
+                    copyBtn.textContent = "Copied to Clipboard!";
+                    setTimeout(() => copyBtn.textContent = "Copy Base64 to Clipboard", 2000);
+                } catch (err) { /* Fallback not required */ }
+            }
+        }
+
+        async function convertToPdfBatch() {
+            if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') {
+                console.error("jsPDF library not loaded. Cannot perform PDF conversion.");
+                return;
+            }
+            
+            const convertBtn = document.getElementById('convert-btn');
+            const originalText = convertBtn.textContent;
+            
+            const filename = document.getElementById('pdf-filename').value.trim() || 'converted_document';
+            const quality = parseInt(document.getElementById('converter-quality-slider').value, 10) / 100;
+            const compressionFormat = 'image/jpeg';
+            const canvas = document.getElementById('hidden-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            const { jsPDF } = window.jspdf;
+            
+            const standardWidth = 210;
+            const standardHeight = 297;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            let firstImage = true;
+
+            try {
+                for (let i = 0; i < uploadedFiles.length; i++) {
+                    const img = await loadImageFromFile(uploadedFiles[i]);
+                    
+                    const imgWidth = img.width;
+                    const imgHeight = img.height;
+                    
+                    canvas.width = imgWidth;
+                    canvas.height = imgHeight;
+                    ctx.clearRect(0, 0, imgWidth, imgHeight); 
+                    ctx.drawImage(img, 0, 0, imgWidth, imgHeight); 
+                    
+                    const compressedDataURL = canvas.toDataURL(compressionFormat, quality); 
+
+                    const widthRatio = standardWidth / imgWidth;
+                    const heightRatio = standardHeight / imgHeight;
+                    const ratio = Math.min(widthRatio, heightRatio) * 0.9;
+
+                    const pdfWidth = imgWidth * ratio;
+                    const pdfHeight = imgHeight * ratio;
+
+                    if (!firstImage) {
+                        pdf.addPage();
+                    } else {
+                        firstImage = false;
+                    }
+
+                    pdf.addImage(compressedDataURL, 'JPEG', 
+                        (standardWidth - pdfWidth) / 2, 
+                        (standardHeight - pdfHeight) / 2, 
+                        pdfWidth, pdfHeight);
+                }
+
+                pdf.save(`${filename}.pdf`);
+            } catch (error) {
+                console.error("PDF Batch Conversion Error:", error);
+                convertBtn.textContent = 'Error during conversion';
+                setTimeout(() => convertBtn.textContent = originalText, 3000);
+            } finally {
+                convertBtn.disabled = false;
+                updateConverterUI();
+            }
+        }
+
+
+        // --- Tab Control Logic ---
+        function setActiveTab(tabName) {
+            const contents = {
+                'generator': document.getElementById('content-generator'),
+                'compressor': document.getElementById('content-compressor'),
+                'converter': document.getElementById('content-converter'), 
+                'ocr': document.getElementById('content-ocr')
+            };
+
+            const tabs = {
+                'generator': document.getElementById('tab-generator'),
+                'compressor': document.getElementById('tab-compressor'),
+                'converter': document.getElementById('tab-converter'), 
+                'ocr': document.getElementById('tab-ocr')
+            };
+
+            Object.values(contents).forEach(el => el && el.classList.add('hidden'));
+            Object.values(tabs).forEach(el => {
+                if(el) {
+                    el.classList.remove('tab-active');
+                    el.classList.add('tab-inactive');
+                }
+            });
+
+            if (contents[tabName]) {
+                contents[tabName].classList.remove('hidden');
+                tabs[tabName].classList.add('tab-active');
+                tabs[tabName].classList.remove('tab-inactive');
+            }
+            
+            if (tabName === 'compressor' && uploadedFiles.length > 0) { 
+                loadFirstImageForDefaults(); 
+            } else if (tabName === 'converter') { 
+                updateConverterUI(); 
+            }
+        }
+        
+        // Start Three.js and set the initial tab
+        window.addEventListener('load', () => {
+            initThreeJS();
+            animate();
+            setActiveTab('generator');
+        });
+    </script>
+</body>
+</html>
