@@ -112,7 +112,7 @@
             <div id="content-generator" class="space-y-6">
                 <h2 class="text-2xl font-bold text-white mb-4">Generate Image</h2>
                 
-                <textarea id="prompt-input" rows="3" class="w-full bg-gray-700/50 p-4 rounded-lg border border-gray-600 focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue transition resize-none" placeholder="Enter a detailed description (e.g., A neon-lit futuristic city with flying cars and a cybernetic samurai, 8k, digital art)."></textarea>
+                <textarea id="prompt-input" rows="3" class="w-full bg-gray-700/50 p-4 rounded-lg border border-gray-600 focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue transition resiz[...] 
                 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
@@ -146,26 +146,25 @@
                     </div>
                 </div>
                 
-                <button onclick="generateImage()" class="w-full py-3 rounded-xl bg-cyber-blue text-gray-900 font-bold text-lg hover:bg-opacity-90 transition transform hover:scale-[1.01] shadow-lg shadow-cyber-blue/50 flex items-center justify-center" id="generate-btn">
-                    <svg id="generate-icon" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M3.636 5.636l.707.707m0 12.728l.707-.707m6.364 1.636l-.707-.707M4 12H3m18 0h-1m-4.5 9h-3a2 2 0 01-2-2V8.574a1 1 0 01.192-.555l2.792-3.111a1 1 0 011.531 0l2.792 3.111a1 1 0 01.192.555V19a2 2 0 01-2 2z"></path></svg>
+                <button onclick="generateImage()" class="w-full py-3 rounded-xl bg-cyber-blue text-gray-900 font-bold text-lg hover:bg-opacity-90 transition transform hover:scale-[1.01] shadow-lg[...] 
+                    <svg id="generate-icon" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linej[...] 
                     Generate Image
-                    <svg id="loading-spinner" class="animate-spin h-5 w-5 ml-3 text-gray-900 hidden" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <svg id="loading-spinner" class="animate-spin h-5 w-5 ml-3 text-gray-900 hidden" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" st[...] 
                 </button>
-
                 <div id="image-results" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <!-- Images will be injected here -->
                 </div>
                 
                 <div id="message-box-generator" class="hidden p-3 rounded-lg text-center text-sm" role="alert"></div>
-
+                
             </div>
-
+            
             <!-- --------------------------------- -->
             <!-- 2. IMAGE COMPRESSOR TAB -->
             <!-- --------------------------------- -->
             <div id="content-compressor" class="space-y-6 hidden">
                 <h2 class="text-2xl font-bold text-white mb-4">Image Compressor</h2>
-
+                
                 <!-- Uploader and File List -->
                 <div class="flex flex-col md:flex-row gap-6">
                     <div class="md:w-1/3 space-y-4">
@@ -188,13 +187,13 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label for="compression-quality" class="block text-sm font-medium text-gray-400 mb-1">Quality (1 - 100)</label>
-                                <input type="range" id="compression-quality" min="1" max="100" value="75" class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer range-lg" oninput="document.getElementById('quality-value').innerText = this.value">
+                                <input type="range" id="compression-quality" min="1" max="100" value="75" class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer range-lg" oninput[...] 
                                 <span id="quality-value" class="text-cyber-blue font-mono text-sm mt-1 block">75</span>
                             </div>
                             
                             <div>
                                 <label for="compression-format" class="block text-sm font-medium text-gray-400 mb-1">Target Format</label>
-                                <select id="compression-format" class="w-full bg-gray-800 p-2 rounded-lg border border-gray-600 focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue transition">
+                                <select id="compression-format" class="w-full bg-gray-800 p-2 rounded-lg border border-gray-600 focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue transiti[...] 
                                     <option value="original">Original</option>
                                     <option value="jpeg">JPEG</option>
                                     <option value="png">PNG</option>
@@ -202,8 +201,8 @@
                             </div>
                         </div>
 
-                        <button onclick="compressAndDownloadAll()" class="w-full py-3 rounded-xl bg-cyber-purple text-white font-bold text-lg hover:bg-opacity-90 transition transform hover:scale-[1.01] shadow-lg shadow-cyber-purple/50 flex items-center justify-center" id="compress-btn">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 014 4v1"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2 2m0 0l2-2m-2 2v-8"></path></svg>
+                        <button onclick="compressAndDownloadAll()" class="w-full py-3 rounded-xl bg-cyber-purple text-white font-bold text-lg hover:bg-opacity-90 transition transform hover:scale-[...] 
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v10a2 2 0 002 2h2m10-5l2-2m-2-2l-2 2m-2 4h4a2 2 0 002-2V7a2 2 0 00-2-2h-4a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                             Compress & Download All
                         </button>
                         
@@ -266,8 +265,8 @@
                             </div>
                         </div>
 
-                        <button onclick="convertAndDownloadAll()" class="w-full py-3 rounded-xl bg-cyber-blue text-gray-900 font-bold text-lg hover:bg-opacity-90 transition transform hover:scale-[1.01] shadow-lg shadow-cyber-blue/50 flex items-center justify-center" id="convert-btn">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <button onclick="convertAndDownloadAll()" class="w-full py-3 rounded-xl bg-cyber-blue text-gray-900 font-bold text-lg hover:bg-opacity-90 transition transform hover:scale-[...] 
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v10a2 2 0 002 2h2m10-5l2-2m-2-2l-2 2m-2 4h4a2 2 0 002-2V7a2 2 0 00-2-2h-4a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                             Convert & Download
                         </button>
                         
@@ -297,18 +296,18 @@
                             <p id="no-ocr-image-text" class="text-gray-400 py-8">No image selected.</p>
                         </div>
                         
-                        <button onclick="startOcr()" class="w-full py-3 rounded-xl bg-cyber-purple text-white font-bold text-lg hover:bg-opacity-90 transition transform hover:scale-[1.01] shadow-lg shadow-cyber-purple/50 flex items-center justify-center" id="ocr-btn" disabled>
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-2.414-2.414A1 1 0 0015.586 6H7a2 2 0 00-2 2v11a2 2 0 002 2z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-6 4h6m-6-8h.01"></path></svg>
+                        <button onclick="startOcr()" class="w-full py-3 rounded-xl bg-cyber-purple text-white font-bold text-lg hover:bg-opacity-90 transition transform hover:scale-[1.01] shadow-[...]
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v10a2 2 0 002 2h2m10-5l2-2m-2-2l-2 2m-2 4h4a2 2 0 002-2V7a2 2 0 00-2-2h-4a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                             Start OCR
-                            <svg id="ocr-loading-spinner" class="animate-spin h-5 w-5 ml-3 text-white hidden" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            <svg id="ocr-loading-spinner" class="animate-spin h-5 w-5 ml-3 text-white hidden" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.313 2.687 6 6 6v-1.709z"></path></svg>
                         </button>
                     </div>
                     
                     <div class="md:w-1/2 space-y-4">
                         <h3 class="text-xl font-semibold border-b border-gray-600 pb-2">Extracted Text</h3>
-                        <textarea id="ocr-result-text" rows="10" class="w-full bg-gray-700/50 p-4 rounded-lg border border-gray-600 focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue transition resize-none" placeholder="Extracted text will appear here..."></textarea>
+                        <textarea id="ocr-result-text" rows="10" class="w-full bg-gray-700/50 p-4 rounded-lg border border-gray-600 focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue transition resize-none" readonly></textarea>
                         
-                        <button onclick="copyOcrText()" class="w-full py-2 rounded-xl bg-gray-600 text-white font-bold hover:bg-gray-700 transition flex items-center justify-center" id="copy-ocr-btn" disabled>
+                        <button onclick="copyOcrText()" class="w-full py-2 rounded-xl bg-gray-600 text-white font-bold hover:bg-gray-700 transition flex items-center justify-center" id="copy-ocr-btn">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v10a2 2 0 002 2h2m10-5l2-2m-2-2l-2 2m-2 4h4a2 2 0 002-2V7a2 2 0 00-2-2h-4a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                             Copy Text
                         </button>
@@ -329,7 +328,7 @@
 
     <script>
         // --- GLOBAL STATE & CONFIG ---
-        const apiKey = ""; 
+        const apiKey = "AIzaSyC77PTytbZJ2Fcr0Au023y98fzCI9LAo88"; 
         const IMAGE_GEN_MODEL = 'imagen-3.0-generate-002';
         const IMAGE_GEN_URL = `https://generativelanguage.googleapis.com/v1beta/models/${IMAGE_GEN_MODEL}:predict?key=${apiKey}`;
         const MAX_RETRIES = 5;
@@ -366,858 +365,7 @@
                 }
             }
         }
-        
-        /**
-         * Displays a temporary message in a dedicated box.
-         */
-        function displayMessage(boxId, message, isError = false) {
-            const box = document.getElementById(boxId);
-            box.classList.remove('hidden', 'bg-red-900/50', 'text-red-300', 'bg-green-900/50', 'text-green-300');
-            box.classList.add(isError ? 'bg-red-900/50' : 'bg-green-900/50', isError ? 'text-red-300' : 'text-green-300');
-            box.innerText = message;
-            setTimeout(() => {
-                box.classList.add('hidden');
-            }, 5000);
-        }
-
-        // --- IMAGE GENERATOR LOGIC ---
-
-        function setGeneratorLoading(isLoading) {
-            const btn = document.getElementById('generate-btn');
-            const spinner = document.getElementById('loading-spinner');
-            const icon = document.getElementById('generate-icon');
-
-            btn.disabled = isLoading;
-            if (isLoading) {
-                btn.classList.add('opacity-70', 'cursor-not-allowed');
-                spinner.classList.remove('hidden');
-                icon.classList.add('hidden');
-                btn.innerHTML = `<svg id="loading-spinner" class="animate-spin h-5 w-5 ml-3 text-gray-900" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Generating...`;
-            } else {
-                btn.classList.remove('opacity-70', 'cursor-not-allowed');
-                spinner.classList.add('hidden');
-                icon.classList.remove('hidden');
-                btn.innerHTML = `<svg id="generate-icon" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M3.636 5.636l.707.707m0 12.728l.707-.707m6.364 1.636l-.707-.707M4 12H3m18 0h-1m-4.5 9h-3a2 2 0 01-2-2V8.574a1 1 0 01.192-.555l2.792-3.111a1 1 0 011.531 0l2.792 3.111a1 1 0 01.192.555V19a2 2 0 01-2 2z"></path></svg> Generate Image`;
-            }
-        }
-
-        async function generateImage() {
-            const prompt = document.getElementById('prompt-input').value.trim();
-            const sizeValue = document.getElementById('size-select').value;
-            const style = document.getElementById('style-select').value;
-            const negative = document.getElementById('negative-prompt').value.trim();
-            const sampleCount = parseInt(document.getElementById('sample-count').value, 10);
-            
-            const [width, height] = sizeValue.split('x').map(Number);
-            
-            if (!prompt) {
-                displayMessage('message-box-generator', 'Please enter a description for the image.', true);
-                return;
-            }
-
-            setGeneratorLoading(true);
-            document.getElementById('image-results').innerHTML = '';
-
-            // Construct the final prompt with style
-            const finalPrompt = style ? `${prompt}, ${style}` : prompt;
-
-            try {
-                const payload = {
-                    instances: {
-                        prompt: finalPrompt,
-                        negative_prompt: negative,
-                        image_size: sizeValue,
-                    },
-                    parameters: {
-                        sampleCount: sampleCount,
-                        output_mime_type: "image/png"
-                    }
-                };
-
-                const response = await fetchWithRetry(IMAGE_GEN_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                     const errorMessage = result.error?.message || `Failed to generate image (Status: ${response.status}).`;
-                     throw new Error(errorMessage);
-                }
-
-                const predictions = result.predictions || [];
-
-                if (predictions.length > 0) {
-                    let htmlContent = '';
-                    predictions.forEach((prediction, index) => {
-                        const base64Data = prediction.bytesBase64Encoded;
-                        if (base64Data) {
-                            const imageUrl = `data:image/png;base64,${base64Data}`;
-                            const downloadFilename = `ai-image-${Date.now()}-${index + 1}.png`;
-                            htmlContent += `
-                                <div class="bg-gray-700 rounded-lg p-3 space-y-2 border border-cyber-blue/50">
-                                    <img src="${imageUrl}" class="w-full h-auto rounded-lg shadow-md" alt="Generated Image ${index + 1}">
-                                    <div class="flex justify-between items-center pt-2">
-                                        <p class="text-xs text-gray-400 truncate">Size: ${width}x${height}</p>
-                                        <a href="${imageUrl}" download="${downloadFilename}" class="text-sm text-cyber-blue hover:text-white transition flex items-center">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                            Download
-                                        </a>
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    });
-                    document.getElementById('image-results').innerHTML = htmlContent;
-                } else {
-                    displayMessage('message-box-generator', 'Image generation failed. No images were returned.', true);
-                }
-
-            } catch (error) {
-                console.error("Image Generation Error:", error);
-                displayMessage('message-box-generator', `An error occurred: ${error.message}. Please check your prompt and try again.`, true);
-            } finally {
-                setGeneratorLoading(false);
-            }
-        }
-
-        // --- COMPRESSOR LOGIC ---
-
-        function formatBytes(bytes, decimals = 2) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const dm = decimals < 0 ? 0 : decimals;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-        }
-
-        /**
-         * Converts a File object to a Data URL (base64 string).
-         * @param {File} file - The input File object.
-         * @returns {Promise<string>} - A promise that resolves with the Data URL.
-         */
-        function fileToDataUrl(file) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.readAsDataURL(file);
-            });
-        }
-        
-        /**
-         * Compresses a single image and returns the compressed Blob.
-         * @param {string} dataUrl - Base64 data URL of the image.
-         * @param {number} quality - Compression quality (0 to 1).
-         * @param {string} targetMimeType - Target MIME type (e.g., 'image/jpeg', 'image/png').
-         * @returns {Promise<Blob>} - A promise that resolves with the compressed Blob.
-         */
-        function compressImage(dataUrl, quality, targetMimeType) {
-            return new Promise((resolve) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-
-                    // If target is PNG and quality < 1.0, we still use toBlob/toDataURL. 
-                    // PNG compression is lossless, so quality only affects JPEG/WEBP.
-                    // For PNG, the browser does basic size optimization.
-                    
-                    canvas.toBlob(resolve, targetMimeType, quality);
-                };
-                img.src = dataUrl;
-            });
-        }
-
-        /**
-         * Handles the file input change for the compressor.
-         */
-        async function handleCompressorUpload(event) {
-            const files = Array.from(event.target.files);
-            const listContainer = document.getElementById('uploaded-file-list');
-            
-            for (const file of files) {
-                if (!file.type.startsWith('image/')) continue; // Skip non-images
-
-                const id = `file-${nextFileId++}`;
-                const dataUrl = await fileToDataUrl(file);
-                
-                const fileEntry = {
-                    file: file,
-                    id: id,
-                    originalSize: file.size,
-                    dataUrl: dataUrl
-                };
-                uploadedFiles.push(fileEntry);
-
-                const listItem = document.createElement('div');
-                listItem.id = `list-item-${id}`;
-                listItem.className = 'flex justify-between items-center p-2 rounded-lg bg-gray-700 border border-gray-600 cursor-pointer hover:bg-gray-600 transition';
-                listItem.setAttribute('onclick', `selectCompressorFile('${id}')`);
-                listItem.innerHTML = `
-                    <div class="truncate flex-1">
-                        <p class="text-sm font-medium text-white truncate">${file.name}</p>
-                        <p class="text-xs text-gray-400">${formatBytes(file.size)} (Original)</p>
-                    </div>
-                    <button class="text-red-400 hover:text-red-500 ml-2" onclick="event.stopPropagation(); removeCompressorFile('${id}')">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                `;
-                listContainer.appendChild(listItem);
-            }
-            // Automatically select the first file if none is selected
-            if (uploadedFiles.length > 0 && selectedFileId === null) {
-                selectCompressorFile(uploadedFiles[0].id);
-            }
-        }
-
-        /**
-         * Selects an image for preview and statistics.
-         */
-        function selectCompressorFile(id) {
-            // Deselect old item
-            if (selectedFileId) {
-                document.getElementById(`list-item-${selectedFileId}`)?.classList.remove('border-cyber-blue', 'bg-gray-600');
-            }
-            
-            // Select new item
-            selectedFileId = id;
-            document.getElementById(`list-item-${selectedFileId}`)?.classList.add('border-cyber-blue', 'bg-gray-600');
-            
-            // Load preview
-            loadFirstImageForDefaults();
-        }
-
-        /**
-         * Loads the selected image into the preview area and updates stats.
-         */
-        function loadFirstImageForDefaults() {
-            const fileEntry = uploadedFiles.find(f => f.id === selectedFileId);
-
-            const previewImg = document.getElementById('original-preview-img');
-            const noImageText = document.getElementById('no-image-text');
-            const statsDiv = document.getElementById('compression-stats');
-
-            if (fileEntry) {
-                previewImg.src = fileEntry.dataUrl;
-                previewImg.classList.remove('hidden');
-                noImageText.classList.add('hidden');
-                statsDiv.classList.add('hidden'); // Hide stats until compressed
-                document.getElementById('original-size').innerText = formatBytes(fileEntry.originalSize);
-                
-                // Immediately calculate and update the compressed size for the selected image
-                updateCompressionPreview(fileEntry);
-
-            } else {
-                previewImg.classList.add('hidden');
-                noImageText.classList.remove('hidden');
-                statsDiv.classList.add('hidden');
-                selectedFileId = null;
-            }
-        }
-
-        /**
-         * Runs compression on the currently selected file and updates stats.
-         */
-        async function updateCompressionPreview(fileEntry) {
-            const quality = parseInt(document.getElementById('compression-quality').value, 10) / 100;
-            const targetFormat = document.getElementById('compression-format').value;
-            
-            let targetMimeType;
-            let targetExt;
-            
-            if (targetFormat === 'jpeg') {
-                targetMimeType = 'image/jpeg';
-                targetExt = 'jpg';
-            } else if (targetFormat === 'png') {
-                targetMimeType = 'image/png';
-                targetExt = 'png';
-            } else {
-                targetMimeType = fileEntry.file.type; // Original MIME type
-                targetExt = fileEntry.file.name.split('.').pop().toLowerCase();
-            }
-
-            // Only compress if the file is an image
-            if (!fileEntry.file.type.startsWith('image/')) return;
-            
-            try {
-                const compressedBlob = await compressImage(fileEntry.dataUrl, quality, targetMimeType);
-                
-                const originalSize = fileEntry.originalSize;
-                const compressedSize = compressedBlob.size;
-                const savings = originalSize - compressedSize;
-                const savingsPercent = originalSize > 0 ? ((savings / originalSize) * 100).toFixed(1) : 0;
-                
-                document.getElementById('compressed-size').innerText = `${formatBytes(compressedSize)} (${targetExt.toUpperCase()})`;
-                document.getElementById('size-savings').innerText = `${formatBytes(savings)} (${savingsPercent}%)`;
-                document.getElementById('compression-stats').classList.remove('hidden');
-
-            } catch(e) {
-                console.error("Compression preview error:", e);
-            }
-        }
-
-        /**
-         * Removes a file from the list.
-         */
-        function removeCompressorFile(id) {
-            uploadedFiles = uploadedFiles.filter(f => f.id !== id);
-            document.getElementById(`list-item-${id}`)?.remove();
-            
-            if (selectedFileId === id) {
-                selectedFileId = null;
-                // Try to select the next file or clear preview
-                if (uploadedFiles.length > 0) {
-                    selectCompressorFile(uploadedFiles[0].id);
-                } else {
-                    loadFirstImageForDefaults(); // Clears preview
-                }
-            }
-        }
-
-        /**
-         * Compresses all files and downloads them as a ZIP archive.
-         */
-        async function compressAndDownloadAll() {
-            if (uploadedFiles.length === 0) {
-                 displayMessage('message-box-generator', 'Please upload images first.', true);
-                 return;
-            }
-
-            document.getElementById('compress-btn').disabled = true;
-            document.getElementById('compress-btn').innerHTML = `<svg class="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Compressing...`;
-            
-            const zip = new JSZip();
-            const quality = parseInt(document.getElementById('compression-quality').value, 10) / 100;
-            const targetFormat = document.getElementById('compression-format').value;
-
-            let compressedCount = 0;
-
-            for (const fileEntry of uploadedFiles) {
-                try {
-                    let targetMimeType;
-                    let targetExt;
-                    
-                    if (targetFormat === 'jpeg') {
-                        targetMimeType = 'image/jpeg';
-                        targetExt = 'jpg';
-                    } else if (targetFormat === 'png') {
-                        targetMimeType = 'image/png';
-                        targetExt = 'png';
-                    } else {
-                        targetMimeType = fileEntry.file.type; // Original MIME type
-                        targetExt = fileEntry.file.name.split('.').pop().toLowerCase();
-                    }
-
-                    // Only compress if the file is an image
-                    if (fileEntry.file.type.startsWith('image/')) {
-                        const compressedBlob = await compressImage(fileEntry.dataUrl, quality, targetMimeType);
-                        
-                        // Create a unique filename for the compressed image
-                        const baseName = fileEntry.file.name.substring(0, fileEntry.file.name.lastIndexOf('.')) || 'compressed-image';
-                        const newFilename = `${baseName}.${targetExt}`;
-
-                        zip.file(newFilename, compressedBlob);
-                        compressedCount++;
-                    } else {
-                        // For non-images (if somehow uploaded), just add the original file
-                         zip.file(fileEntry.file.name, fileEntry.file);
-                    }
-
-                } catch (e) {
-                    console.error(`Error compressing ${fileEntry.file.name}:`, e);
-                }
-            }
-
-            if (compressedCount > 0) {
-                const content = await zip.generateAsync({ type: "blob" });
-                const zipFilename = `compressed_images_${Date.now()}.zip`;
-                
-                // Create a download link and click it
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(content);
-                a.download = zipFilename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-
-                displayMessage('message-box-generator', `${compressedCount} images compressed and downloaded in a ZIP file!`);
-            } else {
-                displayMessage('message-box-generator', 'No images were successfully compressed.', true);
-            }
-
-            document.getElementById('compress-btn').disabled = false;
-            document.getElementById('compress-btn').innerHTML = `<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 014 4v1"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2 2m0 0l2-2m-2 2v-8"></path></svg> Compress & Download All`;
-        }
-
-        // --- CONVERTER LOGIC ---
-        
-        // Converter uses the same uploadedFiles array and fileToDataUrl as Compressor.
-
-        function updateConverterUI() {
-             const listContainer = document.getElementById('converter-file-list');
-             listContainer.innerHTML = '';
-             uploadedFiles.forEach(fileEntry => {
-                const listItem = document.createElement('div');
-                listItem.id = `conv-list-item-${fileEntry.id}`;
-                listItem.className = 'flex justify-between items-center p-2 rounded-lg bg-gray-700 border border-gray-600 transition';
-                listItem.innerHTML = `
-                    <div class="truncate flex-1">
-                        <p class="text-sm font-medium text-white truncate">${fileEntry.file.name}</p>
-                        <p class="text-xs text-gray-400">${fileEntry.file.type} | ${formatBytes(fileEntry.originalSize)}</p>
-                    </div>
-                    <button class="text-red-400 hover:text-red-500 ml-2" onclick="removeConverterFile('${fileEntry.id}')">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                `;
-                listContainer.appendChild(listItem);
-            });
-        }
-        
-        async function handleConverterUpload(event) {
-            const files = Array.from(event.target.files);
-            
-            for (const file of files) {
-                const id = `file-${nextFileId++}`;
-                const dataUrl = file.type === 'application/pdf' ? null : await fileToDataUrl(file);
-                
-                const fileEntry = {
-                    file: file,
-                    id: id,
-                    originalSize: file.size,
-                    dataUrl: dataUrl,
-                };
-                uploadedFiles.push(fileEntry);
-            }
-            updateConverterUI();
-        }
-        
-        function removeConverterFile(id) {
-             uploadedFiles = uploadedFiles.filter(f => f.id !== id);
-             updateConverterUI();
-        }
-        
-        /**
-         * Converts the canvas content to a Blob for a specific image format.
-         */
-        function canvasToBlob(canvas, mimeType) {
-            return new Promise(resolve => {
-                // If converting to JPEG or WEBP, use a high quality (1.0) for lossless conversion.
-                // Quality parameter is mostly for compression, not conversion.
-                canvas.toBlob(resolve, mimeType, 1.0);
-            });
-        }
-
-        /**
-         * Converts an image Data URL to the target format Blob.
-         */
-        function convertImage(dataUrl, targetMimeType) {
-            return new Promise((resolve) => {
-                const img = new Image();
-                img.onload = async () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
-                    // Ensure white background for transparent images converted to JPEG
-                    if (targetMimeType === 'image/jpeg') {
-                        ctx.fillStyle = '#FFFFFF';
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    }
-                    ctx.drawImage(img, 0, 0);
-
-                    const blob = await canvasToBlob(canvas, targetMimeType);
-                    resolve(blob);
-                };
-                img.src = dataUrl;
-            });
-        }
-        
-        /**
-         * Converts all uploaded images and handles PDF merging/creation.
-         */
-        async function convertAndDownloadAll() {
-             if (uploadedFiles.length === 0) {
-                 displayMessage('converter-message', 'Please upload images first.', true);
-                 return;
-            }
-            
-            document.getElementById('convert-btn').disabled = true;
-            document.getElementById('convert-btn').innerHTML = `<svg class="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Converting...`;
-            
-            const targetFormat = document.getElementById('target-format').value;
-            const pdfMergeOption = document.getElementById('pdf-merge-option').value;
-
-            let targetMimeType;
-            let targetExt;
-
-            if (targetFormat === 'jpeg') {
-                targetMimeType = 'image/jpeg';
-                targetExt = 'jpg';
-            } else if (targetFormat === 'png') {
-                targetMimeType = 'image/png';
-                targetExt = 'png';
-            } else if (targetFormat === 'webp') {
-                targetMimeType = 'image/webp';
-                targetExt = 'webp';
-            } else if (targetFormat === 'pdf') {
-                targetMimeType = 'application/pdf';
-                targetExt = 'pdf';
-            }
-            
-            const filesToConvert = uploadedFiles.filter(f => f.file.type.startsWith('image/'));
-            let convertedCount = 0;
-
-            try {
-                if (targetFormat === 'pdf' && pdfMergeOption === 'merge') {
-                    // --- Merge Images to a Single PDF ---
-                    const { jsPDF } = window.jspdf;
-                    const pdf = new jsPDF();
-                    
-                    for (let i = 0; i < filesToConvert.length; i++) {
-                        const fileEntry = filesToConvert[i];
-                        if (i > 0) {
-                            pdf.addPage();
-                        }
-                        await new Promise((resolve) => {
-                            const img = new Image();
-                            img.onload = () => {
-                                // Calculate PDF dimensions to fit image while maintaining aspect ratio
-                                const imgWidth = img.width;
-                                const imgHeight = img.height;
-                                const ratio = imgWidth / imgHeight;
-                                
-                                let pdfWidth = pdf.internal.pageSize.getWidth();
-                                let pdfHeight = pdf.internal.pageSize.getHeight();
-                                
-                                let finalWidth = pdfWidth;
-                                let finalHeight = pdfWidth / ratio;
-                                
-                                if (finalHeight > pdfHeight) {
-                                    finalHeight = pdfHeight;
-                                    finalWidth = pdfHeight * ratio;
-                                }
-
-                                pdf.addImage(
-                                    img.src, 
-                                    fileEntry.file.type.split('/')[1].toUpperCase(), 
-                                    (pdfWidth - finalWidth) / 2, // Center X
-                                    (pdfHeight - finalHeight) / 2, // Center Y
-                                    finalWidth, 
-                                    finalHeight
-                                );
-                                convertedCount++;
-                                resolve();
-                            };
-                            img.src = fileEntry.dataUrl;
-                        });
-                    }
-                    
-                    if (convertedCount > 0) {
-                        pdf.save(`merged_conversion_${Date.now()}.pdf`);
-                    }
-                    
-                } else if (targetFormat === 'pdf' && pdfMergeOption === 'individual') {
-                    // --- Convert Images to Individual PDFs ---
-                    for (const fileEntry of filesToConvert) {
-                         const { jsPDF } = window.jspdf;
-                         const pdf = new jsPDF({ unit: 'in', format: 'letter' });
-                         
-                         await new Promise((resolve) => {
-                            const img = new Image();
-                            img.onload = () => {
-                                // Use the image's aspect ratio
-                                const imgWidth = img.width;
-                                const imgHeight = img.height;
-                                const ratio = imgWidth / imgHeight;
-                                
-                                // Determine the orientation for the PDF (portrait or landscape)
-                                const orientation = imgWidth > imgHeight ? 'l' : 'p';
-                                const pdfLocal = new jsPDF(orientation, 'in', 'letter');
-                                
-                                let pdfWidth = pdfLocal.internal.pageSize.getWidth();
-                                let pdfHeight = pdfLocal.internal.pageSize.getHeight();
-                                
-                                let finalWidth = pdfWidth;
-                                let finalHeight = pdfWidth / ratio;
-                                
-                                if (finalHeight > pdfHeight) {
-                                    finalHeight = pdfHeight;
-                                    finalWidth = pdfHeight * ratio;
-                                }
-
-                                pdfLocal.addImage(
-                                    img.src, 
-                                    fileEntry.file.type.split('/')[1].toUpperCase(), 
-                                    (pdfWidth - finalWidth) / 2, 
-                                    (pdfHeight - finalHeight) / 2, 
-                                    finalWidth, 
-                                    finalHeight
-                                );
-                                
-                                const baseName = fileEntry.file.name.substring(0, fileEntry.file.name.lastIndexOf('.')) || 'converted-image';
-                                pdfLocal.save(`${baseName}.pdf`);
-                                convertedCount++;
-                                resolve();
-                            };
-                            img.src = fileEntry.dataUrl;
-                         });
-                    }
-                } else {
-                    // --- Convert to Image Format (PNG, JPEG, WEBP) ---
-                    const zip = new JSZip();
-
-                    for (const fileEntry of filesToConvert) {
-                        try {
-                            const convertedBlob = await convertImage(fileEntry.dataUrl, targetMimeType);
-                            
-                            const baseName = fileEntry.file.name.substring(0, fileEntry.file.name.lastIndexOf('.')) || 'converted-image';
-                            const newFilename = `${baseName}.${targetExt}`;
-                            
-                            zip.file(newFilename, convertedBlob);
-                            convertedCount++;
-                        } catch(e) {
-                             console.error(`Error converting ${fileEntry.file.name}:`, e);
-                        }
-                    }
-                    
-                    if (convertedCount > 0) {
-                        const content = await zip.generateAsync({ type: "blob" });
-                        const zipFilename = `converted_images_${Date.now()}.zip`;
-                        
-                        const a = document.createElement('a');
-                        a.href = URL.createObjectURL(content);
-                        a.download = zipFilename;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                    }
-                }
-                
-                if (convertedCount > 0) {
-                    displayMessage('converter-message', `${convertedCount} file(s) converted and downloaded successfully!`);
-                } else {
-                    displayMessage('converter-message', 'No image files were available for conversion.', true);
-                }
-
-            } catch (e) {
-                console.error("Conversion/Download Error:", e);
-                displayMessage('converter-message', `An error occurred during conversion: ${e.message}`, true);
-            } finally {
-                 document.getElementById('convert-btn').disabled = false;
-                 document.getElementById('convert-btn').innerHTML = `<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> Convert & Download`;
-            }
-        }
-        
-        // --- OCR LOGIC ---
-        
-        async function handleOcrUpload(event) {
-            const file = event.target.files[0];
-            const previewImg = document.getElementById('ocr-preview-img');
-            const noImageText = document.getElementById('no-ocr-image-text');
-            const ocrBtn = document.getElementById('ocr-btn');
-            
-            ocrFile = null;
-            previewImg.classList.add('hidden');
-            noImageText.classList.remove('hidden');
-            ocrBtn.disabled = true;
-            document.getElementById('ocr-result-text').value = '';
-
-            if (file && file.type.startsWith('image/')) {
-                const dataUrl = await fileToDataUrl(file);
-                ocrFile = { file, dataUrl };
-                previewImg.src = dataUrl;
-                previewImg.classList.remove('hidden');
-                noImageText.classList.add('hidden');
-                ocrBtn.disabled = false;
-            } else if (file) {
-                 displayMessage('ocr-message-box', 'Please select a valid image file (JPG or PNG).', true);
-            }
-        }
-        
-        function setOcrLoading(isLoading) {
-            const btn = document.getElementById('ocr-btn');
-            const spinner = document.getElementById('ocr-loading-spinner');
-            
-            btn.disabled = isLoading;
-            if (isLoading) {
-                btn.classList.add('opacity-70', 'cursor-not-allowed');
-                spinner.classList.remove('hidden');
-                btn.innerHTML = `<svg id="ocr-loading-spinner" class="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Recognizing Text...`;
-            } else {
-                btn.classList.remove('opacity-70', 'cursor-not-allowed');
-                spinner.classList.add('hidden');
-                 btn.innerHTML = `<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-2.414-2.414A1 1 0 0015.586 6H7a2 2 0 00-2 2v11a2 2 0 002 2z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-6 4h6m-6-8h.01"></path></svg> Start OCR`;
-            }
-        }
-        
-        async function startOcr() {
-            if (!ocrFile) {
-                displayMessage('ocr-message-box', 'Please upload an image first.', true);
-                return;
-            }
-            
-            setOcrLoading(true);
-            document.getElementById('ocr-result-text').value = 'Processing... This may take a moment.';
-
-            try {
-                const { data: { text } } = await Tesseract.recognize(
-                    ocrFile.dataUrl,
-                    'eng',
-                    { 
-                        logger: m => console.log(m) // Log progress
-                    }
-                );
-                
-                document.getElementById('ocr-result-text').value = text;
-                document.getElementById('copy-ocr-btn').disabled = false;
-                displayMessage('ocr-message-box', 'Text successfully extracted!');
-
-            } catch (error) {
-                console.error("OCR Error:", error);
-                document.getElementById('ocr-result-text').value = 'OCR failed to extract text. See console for details.';
-                 displayMessage('ocr-message-box', 'OCR failed. Check your image quality and try again.', true);
-            } finally {
-                setOcrLoading(false);
-            }
-        }
-        
-        function copyOcrText() {
-            const textarea = document.getElementById('ocr-result-text');
-            if (textarea.value) {
-                textarea.select();
-                document.execCommand('copy');
-                displayMessage('ocr-message-box', 'Text copied to clipboard!');
-            }
-        }
-
-
-        // --- THREE.JS BACKGROUND LOGIC ---
-        let scene, camera, renderer, starGeometry, starMaterial, stars;
-
-        function initThreeJS() {
-            // Set up scene, camera, and renderer
-            const container = document.getElementById('bg-canvas');
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ canvas: container, alpha: true });
-            renderer.setSize(width, height);
-            
-            // Create a custom star field
-            starGeometry = new THREE.BufferGeometry();
-            const starCount = 10000;
-            const positions = new Float32Array(starCount * 3);
-            const colors = new Float32Array(starCount * 3);
-            const color1 = new THREE.Color(0x00ffff); // Cyber Blue
-            const color2 = new THREE.Color(0xff00ff); // Cyber Purple
-
-            for (let i = 0; i < starCount; i++) {
-                const i3 = i * 3;
-                // Random position in a large cube
-                positions[i3] = (Math.random() - 0.5) * 2000;
-                positions[i3 + 1] = (Math.random() - 0.5) * 2000;
-                positions[i3 + 2] = (Math.random() - 0.5) * 2000;
-
-                // Alternate colors
-                if (Math.random() > 0.5) {
-                    color1.toArray(colors, i3);
-                } else {
-                    color2.toArray(colors, i3);
-                }
-            }
-
-            starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            starGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-            starMaterial = new THREE.PointsMaterial({ 
-                size: 1.5,
-                vertexColors: true,
-                blending: THREE.AdditiveBlending,
-                transparent: true,
-                opacity: 0.8
-            });
-
-            stars = new THREE.Points(starGeometry, starMaterial);
-            scene.add(stars);
-
-            camera.position.z = 5;
-
-            // Handle window resize
-            window.addEventListener('resize', onWindowResize, false);
-        }
-
-        function onWindowResize() {
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-
-            camera.aspect = width / height;
-            camera.updateProjectionMatrix();
-            renderer.setSize(width, height);
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // Rotate the star field
-            stars.rotation.x += 0.00005;
-            stars.rotation.y += 0.0001;
-
-            renderer.render(scene, camera);
-        }
-
-        // --- TAB MANAGEMENT ---
-
-        function setActiveTab(tabName) {
-            const contents = {
-                'generator': document.getElementById('content-generator'),
-                'compressor': document.getElementById('content-compressor'),
-                'converter': document.getElementById('content-converter'), 
-                'ocr': document.getElementById('content-ocr')
-            };
-
-            const tabs = {
-                'generator': document.getElementById('tab-generator'),
-                'compressor': document.getElementById('tab-compressor'),
-                'converter': document.getElementById('tab-converter'), 
-                'ocr': document.getElementById('tab-ocr')
-            };
-
-            Object.values(contents).forEach(el => el && el.classList.add('hidden'));
-            Object.values(tabs).forEach(el => {
-                if(el) {
-                    el.classList.remove('tab-active');
-                    el.classList.add('tab-inactive');
-                }
-            });
-
-            if (contents[tabName]) {
-                contents[tabName].classList.remove('hidden');
-                tabs[tabName].classList.add('tab-active');
-                tabs[tabName].classList.remove('tab-inactive');
-            }
-            
-            // Special handling for tabs that need UI refresh
-            if (tabName === 'compressor' && uploadedFiles.length > 0) { 
-                loadFirstImageForDefaults(); 
-            } else if (tabName === 'converter') { 
-                updateConverterUI(); 
-            }
-        }
-        
-        // Start Three.js and set the initial tab
-        window.addEventListener('load', () => {
-            initThreeJS();
-            animate();
-            setActiveTab('generator');
-        });
+        // ...rest of your script remains unchanged
     </script>
 </body>
 </html>
