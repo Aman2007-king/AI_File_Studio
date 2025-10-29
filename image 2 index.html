@@ -1,48 +1,24 @@
-
-    <!-- Three.js for 3D Background --><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
- <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Image:: Studio: Cyber Edition</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Image:: Studio: Cyber Edition</title>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6H0T540P06"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-6H0T540P06');
+    </script>
 
-  <!-- ✅ Google Analytics (GA4) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6H0T540P06"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-6H0T540P06');
-</script>
-</head>
-<body>
-  <!-- ✅ Core Libraries -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-
-  <!-- ✅ Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
-  <!-- ✅ Tailwind Custom Colors -->
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            'cyber-blue': '#00ffff',
-            'cyber-purple': '#ff00ff',
-          },
-        },
-      },
-    };
-  </script>
-
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Tesseract for OCR -->
     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
     <script>
@@ -55,14 +31,13 @@
                     }
                 }
             }
-        }
+        };
     </script>
 
     <style>
         /* General setup for 3D Background */
         body {
             margin: 0;
-            /* FIX: Removed overflow: hidden; to allow page scrolling */
             background-color: #000;
         }
         /* Style for the Three.js background canvas */
@@ -103,6 +78,15 @@
     </style>
 </head>
 <body class="bg-gray-900 text-white font-[Inter]">
+
+    ```
+
+### Next Action
+
+1.  **Replace** the beginning of your file with the code block above.
+2.  **Commit and Push** the change to GitHub.
+3.  **Wait** for the deployment (look for the green checkmark).
+4.  **Check the live site** in a new Incognito/Private window. The title should now be `AI Image:: Studio: Cyber Edition`, and the Google Tag will be properly loaded.
 
     <!-- Three.js Canvas (Z-0) -->
     <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full z-0 opacity-20"></canvas>
