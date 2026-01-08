@@ -3,19 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AiFileStudio Power | v3.7</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    
-    <meta name="description" content="Free unlimited AI Image Generation and PDF Tools.">
-    <meta property="og:title" content="AiFileStudio PRO">
-    <meta property="og:description" content="The ultimate free AI toolbox for images and documents.">
-    <meta name="twitter:card" content="summary_large_image">
-    <script src="https://cdn.tailwindcss.com"></script>
-    ... (rest of your libraries) ...
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
-    
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AiFileStudio Power | v3.5</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -39,32 +26,9 @@
         #preview-area img { max-width: 100%; border-radius: 12px; border: 1px solid #333; }
         .hidden { display: none; }
     </style>
-        
-        <div class="mt-12 p-6 border-t border-gray-900 text-center">
-            <p class="text-xs text-gray-500 mb-4 uppercase tracking-widest">Share this Tool</p>
-            <div class="flex justify-center gap-4">
-                ... (the links you provided) ...
-            </div>
-        </div>
-
-<a href="https://wa.me/?text=Check out this free AI Image and PDF tool at: " onclick="this.href += window.location.href" target="_blank" ...>
-     
 </head>
 <body>
-<div class="p-4 mt-auto border-t border-gray-900">
-    <p class="text-[9px] text-gray-700 uppercase mb-2 text-center tracking-widest">Sponsored</p>
-    
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" 
-         data-ad-slot="1234567890"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-</div>
-</aside>
+
     <aside>
         <div class="p-8 border-b border-gray-900">
             <h1 class="text-xl font-black italic text-blue-500 tracking-tighter">AiFileStudio<span class="text-white">.PRO</span></h1>
@@ -79,20 +43,6 @@
             <div class="nav-item" onclick="showTab('pdf')"><i class="fas fa-file-pdf"></i> JPG to PDF</div>
             <div class="nav-item" onclick="showTab('ocr')"><i class="fas fa-font"></i> OCR Text</div>
         </div>
-        <div class="p-4 mt-auto border-t border-gray-900">
-    <p class="text-[9px] text-gray-700 uppercase mb-2 text-center tracking-widest">Sponsored</p>
-    
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" 
-         data-ad-slot="1234567890"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-</div>
-</aside>
     </aside>
 
     <main>
@@ -128,88 +78,116 @@
             </div>
         </div>
     </main>
-<div id="result-card" class="cyber-card hidden mt-6">
-            <div id="loader-box" class="flex flex-col items-center py-10">
-                <div class="loader mb-4"></div>
-                <p class="text-xs font-mono text-gray-500">ENGINE ACTIVE...</p>
-            </div>
-            <div id="preview-area" class="flex flex-col items-center"></div>
-        </div>
-
-        <div class="mt-12 p-6 border-t border-gray-900 text-center">
-            <p class="text-xs text-gray-500 mb-4 uppercase tracking-widest">Share this Tool</p>
-            <div class="flex justify-center gap-6">
-                <a href="https://wa.me/?text=Check out this free AI tool!" target="_blank" class="text-gray-400 hover:text-green-500 transition">
-                    <i class="fab fa-whatsapp text-2xl"></i>
-                </a>
-                <a href="https://twitter.com/intent/tweet?text=Free AI Image Generator" target="_blank" class="text-gray-400 hover:text-blue-400 transition">
-                    <i class="fab fa-twitter text-2xl"></i>
-                </a>
-                <button onclick="navigator.clipboard.writeText(window.location.href); alert('Link Copied!')" class="text-gray-400 hover:text-white transition">
-                    <i class="fas fa-link text-2xl"></i>
-                </button>
-            </div>
-        </div>
-    </main>
 
     <script>
         let currentMode = 'ai';
-        const dropZone = document.getElementById('drop-zone');
-        const fileInput = document.getElementById('file-input');
-        const preview = document.getElementById('preview-area');
-        const loader = document.getElementById('loader-box');
-        const resCard = document.getElementById('result-card');
 
-        function setTab(mode, el) {
+        function showTab(mode) {
             currentMode = mode;
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active', 'border-blue-500', 'text-white'));
-            el.classList.add('active', 'border-blue-500', 'text-white');
-            document.getElementById('tool-title').innerText = mode.toUpperCase() + " STUDIO";
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            const titles = {
+                'ai': ['AI Art Studio', 'Generate images from text prompts.'],
+                'resize': ['Image Resizer', 'Change dimensions and shrink file size.'],
+                'merge': ['PDF Merger', 'Combine multiple PDF files into one.'],
+                'pdf': ['JPG to PDF', 'Convert images into a single PDF document.'],
+                'ocr': ['OCR Engine', 'Extract text from any image or PDF.']
+            };
+            
+            document.getElementById('current-title').innerText = titles[mode][0];
+            document.getElementById('tab-title').querySelector('p').innerText = titles[mode][1];
+            document.getElementById('file-help').innerText = mode === 'merge' ? "Tip: Select multiple PDF files." : "";
+            document.getElementById('main-input').placeholder = mode === 'resize' ? "Target Width (e.g. 800)" : "Enter text here...";
+            document.getElementById('result-card').classList.add('hidden');
         }
 
         async function processTask() {
-            const prompt = document.getElementById('prompt-input').value;
-            const files = fileInput.files;
-            
+            const input = document.getElementById('main-input').value;
+            const files = document.getElementById('main-file').files;
+            const resCard = document.getElementById('result-card');
+            const preview = document.getElementById('preview-area');
+            const loader = document.getElementById('loader-box');
+
             resCard.classList.remove('hidden');
-            loader.classList.remove('hidden');
-            preview.innerHTML = '';
+            preview.innerHTML = ""; loader.classList.remove('hidden');
 
             try {
                 if (currentMode === 'ai') {
-                    if(!prompt) throw "Please enter a prompt";
-                    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true`;
-                    preview.innerHTML = `<img src="${url}" class="rounded-lg mb-4 shadow-2xl border border-gray-800"><a href="${url}" download="ai-art.jpg" class="bg-blue-600 px-8 py-3 rounded-full text-xs font-bold uppercase tracking-tighter">Download Art</a>`;
-                } 
+                    if(!input) throw "Enter a prompt";
+                    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(input)}?nologo=true`;
+                    preview.innerHTML = `<img src="${url}"><a href="${url}" download="ai.jpg" class="mt-4 bg-blue-600 px-8 py-3 rounded-full text-xs font-bold">Download Art</a>`;
+                }
+
+                else if (currentMode === 'resize') {
+                    if(!files[0] || !input) throw "Upload image and enter width (px)";
+                    const reader = new FileReader();
+                    reader.readAsDataURL(files[0]);
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.src = e.target.result;
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            const scale = input / img.width;
+                            canvas.width = input;
+                            canvas.height = img.height * scale;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                            const data = canvas.toDataURL("image/jpeg", 0.8);
+                            preview.innerHTML = `<img src="${data}"><p class="mt-2 text-[10px] text-gray-500">New Size: ${canvas.width}x${Math.round(canvas.height)}</p><a href="${data}" download="resized.jpg" class="mt-4 bg-green-600 px-8 py-3 rounded-full text-xs font-bold">Download Resized</a>`;
+                            loader.classList.add('hidden');
+                        };
+                    };
+                    return;
+                }
+
+                else if (currentMode === 'merge') {
+                    if(files.length < 2) throw "Select at least 2 PDF files";
+                    const mergedPdf = await PDFLib.PDFDocument.create();
+                    for (const file of files) {
+                        const bytes = await file.arrayBuffer();
+                        const pdf = await PDFLib.PDFDocument.load(bytes);
+                        const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                        copiedPages.forEach((page) => mergedPdf.addPage(page));
+                    }
+                    const pdfBytes = await mergedPdf.save();
+                    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                    const url = URL.createObjectURL(blob);
+                    preview.innerHTML = `<i class="fas fa-file-pdf text-5xl text-red-500 mb-4"></i><p class="text-sm mb-4">Merge Complete!</p><a href="${url}" download="merged.pdf" class="bg-red-600 px-8 py-3 rounded-full text-xs font-bold">Download PDF</a>`;
+                }
+
                 else if (currentMode === 'pdf') {
-                    if(!files[0]) throw "Upload an image first";
+                    if(!files[0]) throw "Upload an image";
                     const { jsPDF } = window.jspdf;
                     const doc = new jsPDF();
                     const reader = new FileReader();
                     reader.readAsDataURL(files[0]);
                     reader.onload = (e) => {
                         doc.addImage(e.target.result, 'JPEG', 10, 10, 190, 150);
-                        doc.save("AiFileStudio.pdf");
-                        preview.innerHTML = `<p class="text-green-500 font-bold">PDF Exported Successfully!</p>`;
+                        doc.save("file.pdf");
+                        preview.innerHTML = `<p class="text-green-500 font-bold">PDF Exported!</p>`;
+                        loader.classList.add('hidden');
                     };
+                    return;
                 }
+
+                else if (currentMode === 'ocr') {
+                    if(!files[0]) throw "Upload an image";
+                    const ret = await Tesseract.recognize(files[0]);
+                    preview.innerHTML = `<textarea class="w-full h-48 bg-black border border-gray-800 p-4 text-xs text-green-500 rounded-xl mb-4">${ret.data.text}</textarea><button onclick="window.saveDoc()" class="bg-gray-700 px-6 py-2 rounded-full text-xs">Save .DOC</button>`;
+                }
+
                 loader.classList.add('hidden');
             } catch (err) {
                 alert(err);
                 resCard.classList.add('hidden');
             }
         }
-
-        // Dropzone handlers
-        dropZone.onclick = () => fileInput.click();
-        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('border-blue-500'); };
-        dropZone.ondragleave = () => dropZone.classList.remove('border-blue-500');
-        dropZone.ondrop = (e) => {
-            e.preventDefault();
-            fileInput.files = e.dataTransfer.files;
-            dropZone.innerText = e.dataTransfer.files[0].name;
+        
+        window.saveDoc = () => {
+            const blob = new Blob([document.querySelector('textarea').value], {type: "application/msword"});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "text.doc"; a.click();
         };
     </script>
 </body>
 </html>
- 
