@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AiFileStudio 2.0 | Cyber Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #050505; color: #e5e7eb; font-family: 'Inter', sans-serif; }
+        .cyber-card {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+        .cyber-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+            transform: translateY(-5px);
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="p-6 border-b border-gray-800 flex justify-between items-center">
+        <h1 class="text-2xl font-bold gradient-text">AiFileStudio <span class="text-xs font-mono text-gray-500 uppercase tracking-widest">v2.0</span></h1>
+        <div class="space-x-6 text-sm">
+            <a href="#" class="hover:text-blue-400 transition">GitHub</a>
+            <a href="#" class="hover:text-blue-400 transition">Documentation</a>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        <header class="text-center mb-16">
+            <h2 class="text-5xl font-extrabold mb-4">All-in-One AI Studio</h2>
+            <p class="text-gray-400 max-w-2xl mx-auto">One dashboard for image generation, file conversion, and AI-powered editing—completely client-side and private.</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <div class="cyber-card p-6 rounded-2xl">
+                <div class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-magic text-blue-500"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Image Generator</h3>
+                <p class="text-sm text-gray-500 mb-4">Create art from text descriptions using AI.</p>
+                <button class="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium">Open Tool</button>
+            </div>
+
+            <div class="cyber-card p-6 rounded-2xl">
+                <div class="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-user-slash text-purple-500"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">BG Remover</h3>
+                <p class="text-sm text-gray-500 mb-4">Instantly remove backgrounds using AI segmentation.</p>
+                <button class="w-full py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium">Try Now</button>
+            </div>
+
+            <div class="cyber-card p-6 rounded-2xl">
+                <div class="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-expand-arrows-alt text-green-500"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">AI Super-Res</h3>
+                <p class="text-sm text-gray-500 mb-4">Upscale low-res images up to 4x without losing quality.</p>
+                <button class="w-full py-2 bg-green-600 hover:bg-green-700 rounded-lg font-medium">Enhance</button>
+            </div>
+
+            <div class="cyber-card p-6 rounded-2xl">
+                <div class="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-eye text-yellow-500"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Vision-to-Text</h3>
+                <p class="text-sm text-gray-500 mb-4">Upload an image and get an AI-generated description.</p>
+                <button class="w-full py-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg font-medium">Scan Image</button>
+            </div>
+
+            <div class="cyber-card p-6 rounded-2xl">
+                <div class="w-12 h-12 bg-pink-500/10 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-vector-square text-pink-500"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Vector Studio</h3>
+                <p class="text-sm text-gray-500 mb-4">Convert PNG/JPG into scalable SVG vectors.</p>
+                <button class="w-full py-2 bg-pink-600 hover:bg-pink-700 rounded-lg font-medium">Vectorize</button>
+            </div>
+
+            <div class="cyber-card p-6 rounded-2xl">
+                <div class="w-12 h-12 bg-gray-500/10 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-file-archive text-gray-400"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">File Utilities</h3>
+                <p class="text-sm text-gray-500 mb-4">Access Image Compression, OCR, and Base64 tools.</p>
+                <button class="w-full py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium">Utilities</button>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="border-t border-gray-900 mt-20 p-10 text-center text-gray-600 text-sm">
+        Built for the future of AI File Management. &copy; 2024 AiFileStudio.
+    </footer>
+
+</body>
+</html>
